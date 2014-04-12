@@ -33,6 +33,7 @@ import com.tr8n.android.tasks.InitializationTask;
 import com.tr8n.android.tokenizers.SpannableStringTokenizer;
 import com.tr8n.core.Language;
 import com.tr8n.core.Tr8n;
+import com.tr8n.core.TranslationKey;
 import com.tr8n.core.Utils;
  
 @SuppressLint("Registered")
@@ -54,7 +55,7 @@ public abstract class InitializationActivity extends Activity implements Initial
 	    	"cache_dir", getFilesDir()
          ));
     	
-        Tr8n.getConfig().addTokenizerClass("styled", SpannableStringTokenizer.class.getName());
+        Tr8n.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
     }
       
     /**
