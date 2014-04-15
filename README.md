@@ -2,12 +2,12 @@
   <img src="https://raw.github.com/tr8n/tr8n/master/doc/screenshots/tr8nlogo.png">
 </p>
 
-Tr8n for Java
+Tr8n Client SDK for Android.
 ===
 
 [![Project status](http://stillmaintained.com/tr8n/tr8n_android_clientsdk.png)](http://stillmaintained.com/tr8n/tr8n_android_clientsdk.png)
 
-Tr8n SDK for Android.
+Tr8n Client SDK for Android provides extensions for building Android apps.
 
 Installation
 ==================
