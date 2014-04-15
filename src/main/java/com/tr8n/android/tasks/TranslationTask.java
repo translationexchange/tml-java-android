@@ -25,7 +25,7 @@ package com.tr8n.android.tasks;
 import android.os.AsyncTask;
 
 import com.tr8n.android.interfaces.Translatable;
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 import com.tr8n.core.Utils;
 
 public class TranslationTask extends AsyncTask<Void, Void, Void> {

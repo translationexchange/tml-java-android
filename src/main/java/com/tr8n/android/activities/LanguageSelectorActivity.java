@@ -40,7 +40,7 @@ import android.widget.ListView;
 
 import com.tr8n.android.adapters.LaguageListAdapter;
 import com.tr8n.core.Language;
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 import com.tr8n.core.Utils;
 
 public class LanguageSelectorActivity extends Tr8nActivity {
@@ -84,7 +84,7 @@ public class LanguageSelectorActivity extends Tr8nActivity {
 
     private void loadLanguagesFromApplication() {
     	LaguageListAdapter adapter = (LaguageListAdapter) languageList.getAdapter();
-    	adapter.setLanguages(Tr8n.getApplication().getlanguages());
+    	adapter.setLanguages(Tr8n.getApplication().getLanguages());
         adapter.notifyDataSetChanged();
     }
     
@@ -126,7 +126,7 @@ public class LanguageSelectorActivity extends Tr8nActivity {
     	        }
     	        
     	    	LaguageListAdapter adapter = (LaguageListAdapter) languageList.getAdapter();
-    	    	adapter.setLanguages(Tr8n.getApplication().getlanguages());
+    	    	adapter.setLanguages(Tr8n.getApplication().getLanguages());
     	    	adapter.notifyDataSetChanged();
     	    }
     		

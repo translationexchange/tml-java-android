@@ -30,7 +30,7 @@ import android.os.Bundle;
 
 import com.tr8n.android.interfaces.Translatable;
 import com.tr8n.android.tasks.TranslationTask;
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 
 public class Tr8nFragment extends Fragment implements Translatable, Observer {
 

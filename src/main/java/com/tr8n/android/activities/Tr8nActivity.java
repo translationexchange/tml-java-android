@@ -35,7 +35,7 @@ import android.os.Bundle;
 import com.tr8n.android.interfaces.Translatable;
 import com.tr8n.android.tasks.TranslationTask;
 import com.tr8n.core.Session;
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 
 @SuppressLint("Registered")
 public abstract class Tr8nActivity extends Activity implements Translatable, Observer {

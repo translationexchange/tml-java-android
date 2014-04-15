@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 import com.tr8n.core.Utils;
 
 public class FileCache extends com.tr8n.core.cache.FileCache {

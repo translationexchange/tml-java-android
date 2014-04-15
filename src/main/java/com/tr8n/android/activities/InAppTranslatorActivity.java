@@ -22,7 +22,7 @@
 
 package com.tr8n.android.activities;
 
-import com.tr8n.core.Tr8n;
+import com.tr8n.android.Tr8n;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
