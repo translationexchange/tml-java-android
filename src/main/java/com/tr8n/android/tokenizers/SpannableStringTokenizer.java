@@ -44,7 +44,7 @@ import android.text.style.ImageSpan;
 import android.text.style.LeadingMarginSpan;
 import android.text.style.LineBackgroundSpan;
 import android.text.style.LineHeightSpan;
-import android.text.style.LocaleSpan;
+//import android.text.style.LocaleSpan;
 import android.text.style.MaskFilterSpan;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.QuoteSpan;
@@ -131,8 +131,8 @@ public class SpannableStringTokenizer extends StyledTokenizer {
 	            	addLineBackgroundSpan(spannable, styleAttributes, start, end);
 	            } else if (styleName.equals("line-height")) {
 	            	addLineHeightSpan(spannable, styleAttributes, start, end);
-	            } else if (styleName.equals("locale")) {
-	            	addLocaleSpan(spannable, styleAttributes, start, end);
+//	            } else if (styleName.equals("locale")) {
+//	            	addLocaleSpan(spannable, styleAttributes, start, end);
 	            } else if (styleName.equals("mask-filter")) {
 	            	addMaskFilterSpan(spannable, styleAttributes, start, end);
 	            } else if (styleName.equals("metric-affecting")) {
@@ -258,9 +258,9 @@ public class SpannableStringTokenizer extends StyledTokenizer {
     	spannable.setSpan((WrapTogetherSpan) style, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 	}
     
-    protected void addLocaleSpan(Spannable spannable, Object style, Integer start, Integer end) {
-    	spannable.setSpan((LocaleSpan) style, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-	}
+//    protected void addLocaleSpan(Spannable spannable, Object style, Integer start, Integer end) {
+//    	spannable.setSpan((LocaleSpan) style, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+//	}
     
     protected void addLineHeightSpan(Spannable spannable, Object style, Integer start, Integer end) {
     	spannable.setSpan((LineHeightSpan) style, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
