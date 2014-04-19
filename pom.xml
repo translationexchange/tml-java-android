@@ -32,12 +32,6 @@
 		</license>
 	</licenses>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
-
 	<distributionManagement>
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>

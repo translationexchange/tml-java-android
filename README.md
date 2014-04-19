@@ -24,6 +24,94 @@ Add the following dependency to your pom.xml:
 </dependency>
 ```
 
+If you use Eclipse or IntelliJ IDEs, the dependencies will be automatically downloaded. This SDK depends on Tr8n Core library that will be installed and added to your classpath.
+
+
+Integration
+==================
+
+You now can initialize the SDK using the following code:
+
+```java
+Tr8n.getConfig().setApplication(Utils.buildStringMap(
+      "key", "YOUR_APP_KEY",
+      "secret", "YOUR_APP_SECRET"
+      ));
+```
+
+Keep in mind that all of the code in Tr8n Core is single threaded. It is up to the container application to ensure that certain methods are called in a separate thread.
+For instance, the above Tr8n initialization code will use network, if available, to download the latest language definitions for the current language.
+Therefore it is necessary to execute this code in a separate thread. A splash screen is a good way to initialize the application assets - and that would be a good place to put the above code.
+
+Here is an example of how the initialization done in a splash screen:
+
+[SplashScreenActivity.java](https://github.com/tr8n/tr8n_samples_wammer_android/blob/master/src/main/java/com/tr8n/samples/wammer/activities/SplashScreenActivity.java)
+
+TML (Translation Markup Language)
+==================
+
+You now can use the translation methods provided by Tr8n. Below are some examples:
+
+Simple labels:
+
+```java
+Tr8n.translate("Hello World");
+```
+
+
+Labels with dynamic data:
+
+```java
+Tr8n.translate("You have selected {language_name} languge", 
+              Utils.buildMap("language_name", Tr8n.getCurrentLanguage().getEnglishName()));
+          
+Tr8n.translate("Number of messages: {count}", Utils.buildMap("count", 5));
+
+Tr8n.translate("Hello {user.name}, you are a {user.gender}", 
+               Utils.buildMap("user", Utils.buildMap("name", "Michael", "gender", "male")));
+
+Tr8n.translate("You have {count||message}", Utils.buildMap("count", 5));
+
+Tr8n.translate("{user| He, She} likes this movie.", Utils.buildMap("user", Utils.buildMap("gender", "male")));
+      
+Tr8n.translate("{user} uploaded {count|| photo} to {user| his, her} photo album.", 
+          Utils.buildMap(
+              "user", Utils.buildMap(
+                    "object", Utils.buildMap("name", "Michael", "gender", "male"),
+                    "attribute", "name"
+                  ),
+              "count", 1
+              ));
+```
+
+Labels with decorations (using HTML):
+
+```java
+Tr8n.translate("[bold: Adjust fonts] using HTML.", Utils.buildMap("bold", "<strong>{$0}</strong>"));
+
+Tr8n.translate("[red: Change color] using HTML.", Utils.buildMap("red", "<font color='red'>{$0}</font>"));
+
+Tr8n.translate("Nest [bold]some bold and [italic: italic][/bold] using HTML.", Utils.buildMap("italic", "<i>{$0}</i>", "bold", "<strong>{$0}</strong>"));
+```
+
+Labels with data and decoration tokens (using SpannableString):
+
+```java
+Tr8n.translateSpannableString("[link: {actor}] uploaded [bold: {count|a document, #count# documents}] to a public folder.", Utils.buildMap(
+        "actor", getActor(),
+        "count", getCount(),
+        "link", Utils.buildMap("color", "blue"),
+        "bold", Utils.buildMap("style", "bold")
+    ));
+    
+Tr8n.translateSpannableString("[link: {actor}] tagged [link: {target}] in [link: {owner::pos}] photo.", Utils.buildMap(
+        "actor", getActor(),
+        "target", getTarget(),
+        "owner", getOwner(),
+        "link", Utils.buildMap("color", "blue")
+    ));
+```
+
 
 Sample Applications
 ==================
