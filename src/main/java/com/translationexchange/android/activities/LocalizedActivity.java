@@ -43,11 +43,11 @@ import android.os.Bundle;
 
 import com.translationexchange.core.Session;
 import com.translationexchange.android.Tml;
-import com.translationexchange.android.interfaces.Translatable;
-import com.translationexchange.android.tasks.TranslationTask;
+import com.translationexchange.android.interfaces.Localizable;
+import com.translationexchange.android.tasks.LocalizationTask;
 
 @SuppressLint("Registered")
-public abstract class LocalizedActivity extends Activity implements Translatable, Observer {
+public abstract class LocalizedActivity extends Activity implements Localizable, Observer {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +69,13 @@ public abstract class LocalizedActivity extends Activity implements Translatable
 	 * This method to be called once the UI is fully setup 
 	 */
 	public void translate() {
-		new TranslationTask(this).execute();	
+		new LocalizationTask(this).execute();	
 	}
 
 	/**
 	 * Returns the source key of the activity
 	 */
-	public String getTr8nSource() {
+	public String getLocalizationSource() {
 		return getClass().getName(); 	
 	}
 
@@ -83,7 +83,7 @@ public abstract class LocalizedActivity extends Activity implements Translatable
 	 * Registers all sources referenced by the activity
 	 */
 	public void registerSources() {
-		Tml.initSource(getTr8nSource());
+		Tml.initSource(getLocalizationSource());
 	}
 	
 	/**
@@ -91,14 +91,14 @@ public abstract class LocalizedActivity extends Activity implements Translatable
 	 * In case your view needs languages other than the current language, ensure that the languages are loaded.
 	 * Use: Tr8n.initLanguage("ru")
 	 */
-	public void onTr8nBeforeTranslate() {
+	public void onBeforeLocalize() {
 		registerSources();
 	}
 	
 	/**
 	 * The main method where all translations should happen
 	 */
-	public void onTr8nTranslate() {
+	public void onLocalize() {
 		// TODO: go through the view hierarchy and translate all components 
 	}
 	

@@ -171,7 +171,7 @@ public class LanguageSelectorActivity extends LocalizedActivity {
     	}.execute(language);
     }
     
-	public void onTr8nTranslate() {
+	public void onLocalize() {
         setTitle(Tml.translate("Select Language"));
 	}
     

@@ -34,17 +34,17 @@ package com.translationexchange.android.interfaces;
 
 public interface Initializable {
 	/**
-	 * Called before Tr8n is initialized 
+	 * Called before Tml is initialized 
 	 */
-    public void onTr8nBeforeInit();
+    public void onBeforeInit();
 
     /**
      * Asynchronous task, called during initialization phase
      */
-    public void onTr8nInit();
+    public void onInit();
     
     /**
-     * Called after Tr8n is initialized
+     * Called after Tml is initialized
      */
-    public void onTr8nAfterInit();
+    public void onAfterInit();
 }

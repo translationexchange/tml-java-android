@@ -57,10 +57,10 @@ public abstract class InitializationActivity extends Activity implements Initial
     /**
      * Override this method to configure anything in Tr8n before it is initialized
      */
-    public void onTr8nBeforeInit() {
+    public void onBeforeInit() {
     	Tml.getConfig().setCache(Utils.buildMap(
 	        "enabled", 	true,
-	    	"class", 	"com.tr8n.android.cache.FileCache",
+	    	"class", 	"com.translationexchange.android.cache.FileCache",
 	    	"cache_dir", getFilesDir()
          ));
     	
@@ -70,7 +70,7 @@ public abstract class InitializationActivity extends Activity implements Initial
     /**
      * Called during initialization
      */
-    public void onTr8nInit() {
+    public void onInit() {
     	Tml.init();
     	
     	String locale = Locale.getDefault().toString();
@@ -91,7 +91,7 @@ public abstract class InitializationActivity extends Activity implements Initial
     /**
      * Called after initialization thread is finished
      */
-    public void onTr8nAfterInit() {
+    public void onAfterInit() {
       finish();
     }
     

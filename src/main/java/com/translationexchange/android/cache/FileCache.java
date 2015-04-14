@@ -68,7 +68,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
 	
 	protected File getCachePath() {
 		if (cachePath == null) {
-			cachePath = new File(getApplicationPath(), "Tr8n");
+			cachePath = new File(getApplicationPath(), "Tml");
 			cachePath.mkdirs();
 	        Tml.getLogger().debug("Cache path: " + cachePath.toString());
 		}

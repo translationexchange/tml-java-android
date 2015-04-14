@@ -38,10 +38,10 @@ import android.app.Fragment;
 import android.os.Bundle;
 
 import com.translationexchange.android.Tml;
-import com.translationexchange.android.interfaces.Translatable;
-import com.translationexchange.android.tasks.TranslationTask;
+import com.translationexchange.android.interfaces.Localizable;
+import com.translationexchange.android.tasks.LocalizationTask;
 
-public class LocalizedFragment extends Fragment implements Translatable, Observer {
+public class LocalizedFragment extends Fragment implements Localizable, Observer {
 
 	public LocalizedFragment(){}
 	
@@ -49,33 +49,33 @@ public class LocalizedFragment extends Fragment implements Translatable, Observe
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
         Tml.addObserver(this);
-        translate();
+        localize();
 	}	
 	
 	/**
 	 * This method to be called once the UI is fully setup 
 	 */
-	public void translate() {
-		new TranslationTask(this).execute();	
+	public void localize() {
+		new LocalizationTask(this).execute();	
 	}
 	
 	public void update(Observable observable, Object data) {
-		translate();
+		localize();
 	}
 
-	public String getTr8nSource() {
+	public String getLocalizationSource() {
 		return getClass().getName(); 	
 	}
 
 	public void registerSources() {
-		Tml.initSource(getTr8nSource());		
+		Tml.initSource(getLocalizationSource());		
 	}
 	
-	public void onTr8nBeforeTranslate() {
+	public void onBeforeLocalize() {
 		registerSources();
 	}
 
-	public void onTr8nTranslate() {
+	public void onLocalize() {
 		// TODO: go through the view hierarchy and translate all components 
 	}
 

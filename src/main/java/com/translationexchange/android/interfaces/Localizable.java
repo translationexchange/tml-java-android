@@ -31,12 +31,12 @@
 
 package com.translationexchange.android.interfaces;
 
-public interface Translatable {
+public interface Localizable {
 
-	public String getTr8nSource();
+	public String getLocalizationSource();
 
-	public void onTr8nBeforeTranslate();
+	public void onBeforeLocalize();
 	
-	public void onTr8nTranslate();
+	public void onLocalize();
 
 }

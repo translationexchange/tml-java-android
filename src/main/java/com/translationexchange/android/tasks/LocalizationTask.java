@@ -35,13 +35,13 @@ import android.os.AsyncTask;
 
 import com.translationexchange.core.Utils;
 import com.translationexchange.android.Tml;
-import com.translationexchange.android.interfaces.Translatable;
+import com.translationexchange.android.interfaces.Localizable;
 
-public class TranslationTask extends AsyncTask<Void, Void, Void> {
+public class LocalizationTask extends AsyncTask<Void, Void, Void> {
 
-	private Translatable translatable;
+	private Localizable translatable;
 	
-	public TranslationTask(Translatable translatable) {
+	public LocalizationTask(Localizable translatable) {
 		this.translatable = translatable;
 	}
     	
@@ -52,7 +52,7 @@ public class TranslationTask extends AsyncTask<Void, Void, Void> {
  
     @Override
     protected Void doInBackground(Void... arg0) {
-        translatable.onTr8nBeforeTranslate();
+        translatable.onBeforeLocalize();
         return null;
     }
  
@@ -60,8 +60,8 @@ public class TranslationTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
         
-        Tml.beginBlockWithOptions(Utils.buildMap("source", translatable.getTr8nSource()));
-        translatable.onTr8nTranslate();
+        Tml.beginBlockWithOptions(Utils.buildMap("source", translatable.getLocalizationSource()));
+        translatable.onLocalize();
         Tml.endBlock();
     }
 }

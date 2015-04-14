@@ -46,18 +46,18 @@ public class InitializationTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected void onPreExecute() {
 	    super.onPreExecute();
-	    initializable.onTr8nBeforeInit();
+	    initializable.onBeforeInit();
 	}
  
     @Override
     protected Void doInBackground(Void...arguments) {
-    	initializable.onTr8nInit();
+    	initializable.onInit();
         return null;
     }
  
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-        initializable.onTr8nAfterInit();
+        initializable.onAfterInit();
     }
 }
