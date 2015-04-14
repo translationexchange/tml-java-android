@@ -2,7 +2,7 @@
   <img src="https://avatars0.githubusercontent.com/u/1316274?v=3&s=200">
 </p>
 
-TML for Android.
+TML for Android
 ===
 
 TML for Android provides extensions for translating Android apps.
@@ -49,49 +49,102 @@ Tml.translate("Hello World");
 Labels with dynamic data:
 
 ```java
-Tml.translate("You have selected {language_name} language", 
-              Utils.buildMap("language_name", Tml.getCurrentLanguage().getEnglishName()));
+Tml.translate(
+  "You have selected {language_name} language", 
+  Utils.buildMap(
+      "language_name", Tml.getCurrentLanguage().getEnglishName()
+  )
+);
           
-Tml.translate("Number of messages: {count}", Utils.buildMap("count", 5));
+Tml.translate(
+  "Number of messages: {count}", 
+  Utils.buildMap(
+    "count", 5
+  )
+);
 
-Tml.translate("Hello {user.name}, you are a {user.gender}", 
-               Utils.buildMap("user", Utils.buildMap("name", "Michael", "gender", "male")));
+Tml.translate(
+  "Hello {user.name}, you are a {user.gender}", 
+  Utils.buildMap(
+      "user", Utils.buildMap(
+                "name", "Michael", 
+                "gender", "male"
+              )
+      )
+);
 
-Tml.translate("You have {count||message}", Utils.buildMap("count", 5));
+Tml.translate(
+  "You have {count||message}", 
+  Utils.buildMap(
+    "count", 5
+  )
+);
 
-Tml.translate("{user| He, She} likes this movie.", Utils.buildMap("user", Utils.buildMap("gender", "male")));
+Tml.translate(
+  "{user| He, She} likes this movie.", 
+  Utils.buildMap(
+    "user", Utils.buildMap(
+              "gender", "male"
+            )
+     )
+);
       
-Tml.translate("{user} uploaded {count|| photo} to {user| his, her} photo album.", 
-          Utils.buildMap(
-              "user", Utils.buildMap(
-                    "object", Utils.buildMap("name", "Michael", "gender", "male"),
-                    "attribute", "name"
-                  ),
-              "count", 1
-              ));
+Tml.translate(
+  "{user} uploaded {count|| photo} to {user| his, her} photo album.", 
+  Utils.buildMap(
+    "user", Utils.buildMap(
+              "object", Utils.buildMap(
+                  "name", "Michael", 
+                  "gender", "male"
+              ),
+              "attribute", "name"
+        ),
+    "count", 1
+    )
+);
+
 ```
 
 Labels with decorations (using HTML):
 
 ```java
-Tml.translate("[bold: Adjust fonts] using HTML.", Utils.buildMap("bold", "<strong>{$0}</strong>"));
+Tml.translate(
+    "[bold: Adjust fonts] using HTML.", 
+    Utils.buildMap("bold", "<strong>{$0}</strong>")
+);
 
-Tml.translate("[red: Change color] using HTML.", Utils.buildMap("red", "<font color='red'>{$0}</font>"));
+Tml.translate(
+    "[red: Change color] using HTML.", 
+    Utils.buildMap(
+        "red", "<font color='red'>{$0}</font>"
+    )
+);
 
-Tml.translate("Nest [bold]some bold and [italic: italic][/bold] using HTML.", Utils.buildMap("italic", "<i>{$0}</i>", "bold", "<strong>{$0}</strong>"));
+Tml.translate(
+  "Nest [bold]some bold and [italic: italic][/bold] using HTML.", 
+  Utils.buildMap(
+      "italic", "<i>{$0}</i>", 
+      "bold", "<strong>{$0}</strong>"
+  )
+);
+
 ```
 
 Labels with data and decoration tokens (using SpannableString):
 
 ```java
-Tml.translateSpannableString("[link: {actor}] uploaded [bold: {count|a document, #count# documents}] to a public folder.", Utils.buildMap(
+Tml.translateSpannableString(
+  "[link: {actor}] uploaded [bold: {count|a document, #count# documents}] to a public folder.", 
+  Utils.buildMap(
         "actor", user,
         "count", 10,
         "link", Utils.buildMap("color", "blue"),
         "bold", Utils.buildMap("style", "bold")
     ));
     
-Tml.translateSpannableString("[link: {actor}] tagged [link: {target}] in [link: {owner::pos}] photo.", Utils.buildMap(
+Tml.translateSpannableString(
+  "[link: {actor}] tagged [link: {target}] in [link: {owner::pos}] photo.", 
+  Utils.buildMap(
         "actor", user1,
         "target", user2,
         "owner", user3,
