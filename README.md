@@ -1,13 +1,11 @@
 <p align="center">
-  <img src="https://raw.github.com/tr8n/tr8n/master/doc/screenshots/tr8nlogo.png">
+  <img src="https://avatars0.githubusercontent.com/u/1316274?v=3&s=200">
 </p>
 
-Tr8n Client SDK for Android.
+TML for Android.
 ===
 
-[![Project status](http://stillmaintained.com/tr8n/tr8n_android_clientsdk.png)](http://stillmaintained.com/tr8n/tr8n_android_clientsdk.png)
-
-Tr8n Client SDK for Android provides extensions for building Android apps.
+TML for Android provides extensions for translating Android apps.
 
 Installation
 ==================
@@ -18,13 +16,13 @@ Add the following dependency to your pom.xml:
 
 ```xml
 <dependency>
-  <groupId>com.tr8nhub</groupId>
-  <artifactId>android-clientsdk</artifactId>
-  <version>0.1.0</version>
+  <groupId>com.translationexchange</groupId>
+  <artifactId>tml-android</artifactId>
+  <version>0.2.1</version>
 </dependency>
 ```
 
-If you use Eclipse or IntelliJ IDEs, the dependencies will be automatically downloaded. This SDK depends on Tr8n Core library that will be installed and added to your classpath.
+If you use Eclipse or IntelliJ IDEs, the dependencies will be automatically installed in your project. 
 
 
 Integration
@@ -33,48 +31,37 @@ Integration
 You now can initialize the SDK using the following code:
 
 ```java
-Tr8n.getConfig().setApplication(Utils.buildStringMap(
-      "key", "YOUR_APP_KEY",
-      "secret", "YOUR_APP_SECRET"
-      ));
+Tml.init(YOUR_APP_TOKEN);
 ```
-
-Keep in mind that all of the code in Tr8n Core is single threaded. It is up to the container application to ensure that certain methods are called in a separate thread.
-For instance, the above Tr8n initialization code will use network, if available, to download the latest language definitions for the current language.
-Therefore it is necessary to execute this code in a separate thread. A splash screen is a good way to initialize the application assets - and that would be a good place to put the above code.
-
-Here is an example of how the initialization done in a splash screen:
-
-[SplashScreenActivity.java](https://github.com/tr8n/tr8n_samples_wammer_android/blob/master/src/main/java/com/tr8n/samples/wammer/activities/SplashScreenActivity.java)
 
 TML (Translation Markup Language)
 ==================
 
-You now can use the translation methods provided by Tr8n. Below are some examples:
+You now can use the translation methods provided by TML. Below are some examples:
 
 Simple labels:
 
 ```java
-Tr8n.translate("Hello World");
+Tml.translate("Hello World");
 ```
 
 
 Labels with dynamic data:
 
 ```java
-Tr8n.translate("You have selected {language_name} languge", 
-              Utils.buildMap("language_name", Tr8n.getCurrentLanguage().getEnglishName()));
+Tml.translate("You have selected {language_name} language", 
+              Utils.buildMap("language_name", Tml.getCurrentLanguage().getEnglishName()));
           
-Tr8n.translate("Number of messages: {count}", Utils.buildMap("count", 5));
+Tml.translate("Number of messages: {count}", Utils.buildMap("count", 5));
 
-Tr8n.translate("Hello {user.name}, you are a {user.gender}", 
+Tml.translate("Hello {user.name}, you are a {user.gender}", 
                Utils.buildMap("user", Utils.buildMap("name", "Michael", "gender", "male")));
 
-Tr8n.translate("You have {count||message}", Utils.buildMap("count", 5));
+Tml.translate("You have {count||message}", Utils.buildMap("count", 5));
 
-Tr8n.translate("{user| He, She} likes this movie.", Utils.buildMap("user", Utils.buildMap("gender", "male")));
+Tml.translate("{user| He, She} likes this movie.", Utils.buildMap("user", Utils.buildMap("gender", "male")));
       
-Tr8n.translate("{user} uploaded {count|| photo} to {user| his, her} photo album.", 
+Tml.translate("{user} uploaded {count|| photo} to {user| his, her} photo album.", 
           Utils.buildMap(
               "user", Utils.buildMap(
                     "object", Utils.buildMap("name", "Michael", "gender", "male"),
@@ -87,27 +74,27 @@ Tr8n.translate("{user} uploaded {count|| photo} to {user| his, her} photo album.
 Labels with decorations (using HTML):
 
 ```java
-Tr8n.translate("[bold: Adjust fonts] using HTML.", Utils.buildMap("bold", "<strong>{$0}</strong>"));
+Tml.translate("[bold: Adjust fonts] using HTML.", Utils.buildMap("bold", "<strong>{$0}</strong>"));
 
-Tr8n.translate("[red: Change color] using HTML.", Utils.buildMap("red", "<font color='red'>{$0}</font>"));
+Tml.translate("[red: Change color] using HTML.", Utils.buildMap("red", "<font color='red'>{$0}</font>"));
 
-Tr8n.translate("Nest [bold]some bold and [italic: italic][/bold] using HTML.", Utils.buildMap("italic", "<i>{$0}</i>", "bold", "<strong>{$0}</strong>"));
+Tml.translate("Nest [bold]some bold and [italic: italic][/bold] using HTML.", Utils.buildMap("italic", "<i>{$0}</i>", "bold", "<strong>{$0}</strong>"));
 ```
 
 Labels with data and decoration tokens (using SpannableString):
 
 ```java
-Tr8n.translateSpannableString("[link: {actor}] uploaded [bold: {count|a document, #count# documents}] to a public folder.", Utils.buildMap(
-        "actor", getActor(),
-        "count", getCount(),
+Tml.translateSpannableString("[link: {actor}] uploaded [bold: {count|a document, #count# documents}] to a public folder.", Utils.buildMap(
+        "actor", user,
+        "count", 10,
         "link", Utils.buildMap("color", "blue"),
         "bold", Utils.buildMap("style", "bold")
     ));
     
-Tr8n.translateSpannableString("[link: {actor}] tagged [link: {target}] in [link: {owner::pos}] photo.", Utils.buildMap(
-        "actor", getActor(),
-        "target", getTarget(),
-        "owner", getOwner(),
+Tml.translateSpannableString("[link: {actor}] tagged [link: {target}] in [link: {owner::pos}] photo.", Utils.buildMap(
+        "actor", user1,
+        "target", user2,
+        "owner", user3,
         "link", Utils.buildMap("color", "blue")
     ));
 ```
@@ -116,27 +103,46 @@ Tr8n.translateSpannableString("[link: {actor}] tagged [link: {target}] in [link:
 Sample Applications
 ==================
 
-The best way to get started with Tr8n is to see it in action. A number of sample applications are available for you to see how the SDK can be integrated and used:
+The best way to get started with Tml is to see it in action. A number of sample applications are available for you to see how the SDK can be integrated and used:
 
-* Tr8n Android Samples: [tr8n_android_samples](https://github.com/tr8n/tr8n_android_samples)
-* Wammer App: [tr8n_samples_wammer_android](https://github.com/tr8n/tr8n_samples_wammer_android)
+* Tml Android Samples: [tml-android-samples](https://github.com/translationexchange/tml-android-samples)
+* Wammer App: [tml-java-android-samples-wammer](https://github.com/translationexchange/tml-java-android-samples-wammer)
 
 
-
-Where can I get more information?
+Links
 ==================
 
-* Register on Tr8nHub.com: https://tr8nhub.com
+* Register on TranslationExchange.com: https://translationexchange.com
 
-* Read Tr8nHub's documentation: http://wiki.tr8nhub.com
+* Follow TranslationExchange on Twitter: https://twitter.com/translationx
 
-* Visit Tr8nHub's blog: http://blog.tr8nhub.com
+* Connect with TranslationExchange on Facebook: https://www.facebook.com/translationexchange
 
-* Follow Tr8nHub on Twitter: https://twitter.com/Tr8nHub
+* If you have any questions or suggestions, contact us: support@translationexchange.com
 
-* Connect with Tr8nHub on Facebook: https://www.facebook.com/pages/tr8nhubcom/138407706218622
 
-* If you have any questions or suggestions, contact us: feedback@tr8nhub.com
+Copyright and license
+==================
 
+Copyright (c) 2015 Translation Exchange, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 

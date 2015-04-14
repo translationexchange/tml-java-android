@@ -2,25 +2,25 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.tr8nhub</groupId>
-	<artifactId>android-clientsdk</artifactId>
-	<version>0.1.0</version>
+	<groupId>com.translationexchange</groupId>
+	<artifactId>tml-android</artifactId>
+	<version>0.2.1</version>
 	<packaging>jar</packaging>
 
-	<name>tr8n-android-clientsdk</name>
-	<description>Tr8n SDK for Android</description>
-	<url>https://github.com/tr8n/tr8n_android_clientsdk</url>
-	<inceptionYear>2014</inceptionYear>
+	<name>tml-android</name>
+	<description>TML for Android</description>
+	<url>https://github.com/translationexchange/tml-java-android</url>
+	<inceptionYear>2015</inceptionYear>
 
 	<organization>
-		<name>Tr8nHub</name>
-		<url>https://tr8nhub.com</url>
+		<name>Translation Exchange, Inc.</name>
+		<url>http://translationexchange.com</url>
 	</organization>
 
 	<developers>
 		<developer>
 			<name>Michael Berkovich</name>
-			<email>michael@tr8nhub.com</email>
+			<email>michael@translationexchange.com</email>
 		</developer>
 	</developers>
 
@@ -40,9 +40,9 @@
   </distributionManagement>
   
 	<scm>
-		<connection>scm:git:git://github.com/tr8n/tr8n_android_clientsdk.git</connection>
-		<developerConnection>scm:git:git://github.com/tr8n/tr8n_android_clientsdk.git</developerConnection>
-		<url>https://github.com/tr8n/tr8n_android_clientsdk</url>
+		<connection>scm:git:git://github.com/translationexchange/tml-java-android.git</connection>
+		<developerConnection>scm:git:git://github.com/translationexchange/tml-java-android.git</developerConnection>
+		<url>https://github.com/translationexchange/tml-java-android</url>
 	</scm>
 
 	<properties>
@@ -58,9 +58,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.tr8nhub</groupId>
-			<artifactId>core</artifactId>
-			<version>0.1.0</version>
+			<groupId>com.translationexchange</groupId>
+			<artifactId>tml</artifactId>
+			<version>0.2.1</version>
 		</dependency>
 	</dependencies>
 
