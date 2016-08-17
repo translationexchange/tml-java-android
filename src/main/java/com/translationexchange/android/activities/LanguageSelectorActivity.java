@@ -47,10 +47,10 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.translationexchange.core.Language;
 import com.translationexchange.core.Utils;
 import com.translationexchange.android.Tml;
 import com.translationexchange.android.adapters.LaguageListAdapter;
+import com.translationexchange.core.languages.Language;
 
 public class LanguageSelectorActivity extends LocalizedActivity {
 
