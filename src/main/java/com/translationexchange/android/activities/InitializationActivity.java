@@ -33,14 +33,14 @@ package com.translationexchange.android.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.Environment;
 
-import com.translationexchange.android.Tml;
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.interfaces.Initializable;
 import com.translationexchange.android.logger.Logger;
 import com.translationexchange.android.tasks.InitializationTask;
 import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
+import com.translationexchange.android.utils.FileUtils;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.languages.Language;
@@ -58,39 +58,39 @@ public abstract class InitializationActivity extends Activity implements Initial
      * Override this method to configure anything in Tr8n before it is initialized
      */
     public void onBeforeInit() {
-        Tml.getConfig().setCache(Utils.buildMap(
+        TmlAndroid.getConfig().setCache(Utils.buildMap(
                 "enabled", true,
                 "class", FileCache.class.getName(),
-                "cache_dir", Environment.getExternalStorageDirectory()
+                "cache_dir", FileUtils.getBaseDirectory(getApplicationContext())
         ));
 
-        Tml.getConfig().setLogger(Utils.buildMap(
+        TmlAndroid.getConfig().setLogger(Utils.buildMap(
                 "class", Logger.class.getName()
         ));
 
-        Tml.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
+        TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
     }
 
     /**
      * Called during initialization
      */
     public void onInit() {
-        Tml.init();
+        TmlAndroid.init();
 
-        String locale = Locale.ENGLISH.toString();
+        String locale = new Locale("ru", "ru").toString();
 //        String locale = Locale.getDefault().toString();
-        Tml.getLogger().debug("System locale: " + locale);
+        TmlAndroid.getLogger().debug("System locale: " + locale);
         locale = locale.replaceAll("_", "-");
 
         // TODO: map android locales to tr8nhub
         locale = locale.split("-")[0];
 
-        if (!Tml.getApplication().isSupportedLocale(locale))
+        if (!TmlAndroid.getApplication().isSupportedLocale(locale))
             return;
 
-        Language language = Tml.getApplication().getLanguage(locale);
+        Language language = TmlAndroid.getApplication().getLanguage(locale);
         if (language != null && language.isLoaded())
-            Tml.switchLanguage(language);
+            TmlAndroid.switchLanguage(language);
     }
 
     /**

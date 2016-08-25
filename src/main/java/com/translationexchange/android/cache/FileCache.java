@@ -31,7 +31,7 @@
 
 package com.translationexchange.android.cache;
 
-import com.translationexchange.android.Tml;
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.core.Utils;
 
 import java.io.File;
@@ -63,19 +63,43 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
             fileCachePath = new File(getCachePath(), Utils.join(parts.toArray(), File.separator));
 
         if (!fileCachePath.exists()) {
-            Tml.getLogger().debug("FileCache", fileCachePath.getPath() + " created: " + fileCachePath.mkdirs());
+            TmlAndroid.getLogger().debug("FileCache", fileCachePath.getPath() + " created: " + fileCachePath.mkdirs());
         }
         return new File(fileCachePath, fileName + ".json");
     }
 
-    protected File getCachePath() {
+    public File getCachePath() {
         if (cachePath == null) {
-            cachePath = new File(getApplicationPath(), "Tml");
+            cachePath = new File(getApplicationPath(), "Tml_cache");
             if (!cachePath.exists()) {
-                Tml.getLogger().debug("FileCache", cachePath.getPath() + " path created: " + cachePath.mkdirs());
+                TmlAndroid.getLogger().debug("FileCache", cachePath.getPath() + " path created: " + cachePath.mkdirs());
             }
         }
         return cachePath;
     }
 
+    @Override
+    public Object fetch(String key, Map<String, Object> options) {
+        if (key.contains("source")) {
+            String local = key.substring(0, key.indexOf("/"));
+            String currentVersion = (String) options.get("current_version");
+            File fileCachePath = getCachePath();
+            File file = new File(fileCachePath, currentVersion + File.separator + local + "/translations.json");
+            if (!file.exists()) {
+                TmlAndroid.getLogger().debug("FileCache", "Cache miss: " + key);
+                return null;
+            }
+
+            try {
+                TmlAndroid.getLogger().debug("FileCache", "Cache hit: " + key);
+                return readFile(file);
+            } catch (Exception ex) {
+                TmlAndroid.getLogger().logException(ex);
+                return null;
+            }
+
+        } else {
+            return super.fetch(key, options);
+        }
+    }
 }

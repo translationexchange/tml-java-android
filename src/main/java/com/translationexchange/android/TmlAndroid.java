@@ -38,10 +38,19 @@ import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
 
 import android.text.Spannable;
 
-public class Tml extends com.translationexchange.core.Tml {
+public class TmlAndroid extends com.translationexchange.core.Tml {
+
+    /**
+     * <p>init.</p>
+     */
+    public static void init() {
+        Map<String, Object> options = getConfig().getApplication();
+        init((String) options.get("key"), (String) options.get("token"), options);
+    }
 
     /**
      * Initializes the SDK
+     *
      * @param key
      * @param secret
      * @param host
@@ -54,7 +63,64 @@ public class Tml extends com.translationexchange.core.Tml {
     }
 
     /**
+     * <p>translate.</p>
+     *
+     * @param label Label to be translated
+     * @return translated label
+     */
+    public static String translate(String label) {
+        return getSession().translate(label);
+    }
+
+    /**
+     * <p>translate.</p>
+     *
+     * @param label       a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translate(String label, String description) {
+        return getSession().translate(label, description);
+    }
+
+    /**
+     * <p>translate.</p>
+     *
+     * @param label       a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param tokens      a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translate(String label, String description, Map<String, Object> tokens) {
+        return getSession().translate(label, description, tokens);
+    }
+
+    /**
+     * <p>translate.</p>
+     *
+     * @param label  a {@link java.lang.String} object.
+     * @param tokens a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translate(String label, Map<String, Object> tokens) {
+        return getSession().translate(label, tokens);
+    }
+
+    /**
+     * <p>translate.</p>
+     *
+     * @param label   a {@link java.lang.String} object.
+     * @param tokens  a {@link java.util.Map} object.
+     * @param options a {@link java.util.Map} object.
+     * @return a {@link java.lang.String} object.
+     */
+    public static String translate(String label, Map<String, Object> tokens, Map<String, Object> options) {
+        return getSession().translate(label, tokens, options);
+    }
+
+    /**
      * Translates the SpannableString
+     *
      * @param label
      * @return
      */
@@ -64,63 +130,61 @@ public class Tml extends com.translationexchange.core.Tml {
 
     /**
      * Translates the SpannableString
+     *
      * @param label
      * @param description
      * @return
      */
-    public static Spannable translateSpannableString(String label,
-                                                     String description) {
+    public static Spannable translateSpannableString(String label, String description) {
         return translateSpannableString(label, description, null);
     }
 
     /**
      * Translates the SpannableString
+     *
      * @param label
      * @param description
      * @param tokens
      * @return
      */
-    public static Spannable translateSpannableString(String label,
-                                                     String description, Map<String, Object> tokens) {
+    public static Spannable translateSpannableString(String label, String description, Map<String, Object> tokens) {
         return translateSpannableString(label, description, tokens, null);
     }
 
     /**
      * Translates the SpannableString
+     *
      * @param label
      * @param tokens
      * @return
      */
-    public static Spannable translateSpannableString(String label,
-                                                     Map<String, Object> tokens) {
+    public static Spannable translateSpannableString(String label, Map<String, Object> tokens) {
         return translateSpannableString(label, null, tokens, null);
     }
 
     /**
      * Translates the SpannableString
+     *
      * @param label
      * @param tokens
      * @param options
      * @return
      */
-    public static Spannable translateSpannableString(String label,
-                                                     Map<String, Object> tokens, Map<String, Object> options) {
+    public static Spannable translateSpannableString(String label, Map<String, Object> tokens, Map<String, Object> options) {
         return translateSpannableString(label, null, tokens, options);
     }
 
     /**
      * Translates the SpannableString
+     *
      * @param label
      * @param description
      * @param tokens
      * @param options
      * @return
      */
-    public static Spannable translateSpannableString(String label,
-                                                     String description, Map<String, Object> tokens,
-                                                     Map<String, Object> options) {
-        return (Spannable) com.translationexchange.core.Tml.getSession()
-                .translateStyledString(label, tokens, options);
+    public static Spannable translateSpannableString(String label, String description, Map<String, Object> tokens, Map<String, Object> options) {
+        return (Spannable) com.translationexchange.core.Tml.getSession().translateStyledString(label, tokens, options);
     }
 
 }

@@ -37,7 +37,7 @@ import java.util.Observer;
 import android.app.Fragment;
 import android.os.Bundle;
 
-import com.translationexchange.android.Tml;
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.interfaces.Localizable;
 import com.translationexchange.android.tasks.LocalizationTask;
 
@@ -48,7 +48,7 @@ public class LocalizedFragment extends Fragment implements Localizable, Observer
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-        Tml.addObserver(this);
+        TmlAndroid.addObserver(this);
         localize();
 	}	
 	
@@ -68,7 +68,7 @@ public class LocalizedFragment extends Fragment implements Localizable, Observer
 	}
 
 	public void registerSources() {
-		Tml.initSource(getLocalizationSource());		
+		TmlAndroid.initSource(getLocalizationSource());
 	}
 	
 	public void onBeforeLocalize() {

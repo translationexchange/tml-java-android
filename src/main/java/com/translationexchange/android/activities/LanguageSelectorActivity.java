@@ -47,8 +47,8 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.core.Utils;
-import com.translationexchange.android.Tml;
 import com.translationexchange.android.adapters.LaguageListAdapter;
 import com.translationexchange.core.languages.Language;
 
@@ -93,12 +93,12 @@ public class LanguageSelectorActivity extends LocalizedActivity {
 
     private void loadLanguagesFromApplication() {
     	LaguageListAdapter adapter = (LaguageListAdapter) languageList.getAdapter();
-    	adapter.setLanguages(Tml.getApplication().getLanguages());
+    	adapter.setLanguages(TmlAndroid.getApplication().getLanguages());
         adapter.notifyDataSetChanged();
     }
     
     private void loadLanguagesFromNetwork() {
-    	final ProgressDialog dialog = ProgressDialog.show(this, Tml.translate("Language Selector"), Tml.translate("Loading languages..."));
+    	final ProgressDialog dialog = ProgressDialog.show(this, TmlAndroid.translate("Language Selector"), TmlAndroid.translate("Loading languages..."));
     	
     	new AsyncTask<Void, Void, Void>() {
     		List<Language> languages;
@@ -112,14 +112,14 @@ public class LanguageSelectorActivity extends LocalizedActivity {
 			@Override
     	    protected Void doInBackground(Void... params) {
     	    	try {
-    	    		Map<String, Object> results = (Map<String, Object>) Tml.getApplication().getHttpClient().getJSON("application/languages");
+    	    		Map<String, Object> results = (Map<String, Object>) TmlAndroid.getApplication().getHttpClient().getJSON("application/languages");
     	    		List<Map<String, Object>> langs = (List<Map<String, Object>>) results.get("results");
     	    		languages = new ArrayList<Language>();
     	    		for (Map<String, Object> attrs : langs) {
     	    			languages.add(new Language(attrs));
     	    		}
     	    	} catch(Exception ex) {
-    	    		Tml.getLogger().logException("Failed to load languages", ex);
+    	    		TmlAndroid.getLogger().logException("Failed to load languages", ex);
     	    	}
     	        return null;
     	    }
@@ -135,7 +135,7 @@ public class LanguageSelectorActivity extends LocalizedActivity {
     	        }
     	        
     	    	LaguageListAdapter adapter = (LaguageListAdapter) languageList.getAdapter();
-    	    	adapter.setLanguages(Tml.getApplication().getLanguages());
+    	    	adapter.setLanguages(TmlAndroid.getApplication().getLanguages());
     	    	adapter.notifyDataSetChanged();
     	    }
     		
@@ -143,7 +143,7 @@ public class LanguageSelectorActivity extends LocalizedActivity {
     }
     
     protected void selectLanguage(Language language) {
-    	final ProgressDialog dialog = ProgressDialog.show(this, Tml.translate("Language Selector"), Tml.translate("Changing language..."));
+    	final ProgressDialog dialog = ProgressDialog.show(this, TmlAndroid.translate("Language Selector"), TmlAndroid.translate("Changing language..."));
 
     	new AsyncTask<Language, Void, Void>() {
     		Map<String, Object> options;
@@ -157,7 +157,7 @@ public class LanguageSelectorActivity extends LocalizedActivity {
     		
     	    @Override
     	    protected Void doInBackground(Language... languages) {
-    	    	Tml.switchLanguage(languages[0], options);
+    	    	TmlAndroid.switchLanguage(languages[0], options);
     	        return null;
     	    }
     	 
@@ -172,7 +172,7 @@ public class LanguageSelectorActivity extends LocalizedActivity {
     }
     
 	public void onLocalize() {
-        setTitle(Tml.translate("Select Language"));
+        setTitle(TmlAndroid.translate("Select Language"));
 	}
     
 }

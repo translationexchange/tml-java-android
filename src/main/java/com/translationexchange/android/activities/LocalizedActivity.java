@@ -42,7 +42,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import com.translationexchange.core.Session;
-import com.translationexchange.android.Tml;
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.interfaces.Localizable;
 import com.translationexchange.android.tasks.LocalizationTask;
 
@@ -52,7 +52,7 @@ public abstract class LocalizedActivity extends Activity implements Localizable,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Tml.addObserver(this);
+        TmlAndroid.addObserver(this);
     }
 	
 	/**
@@ -83,7 +83,7 @@ public abstract class LocalizedActivity extends Activity implements Localizable,
 	 * Registers all sources referenced by the activity
 	 */
 	public void registerSources() {
-		Tml.initSource(getLocalizationSource());
+		TmlAndroid.initSource(getLocalizationSource());
 	}
 	
 	/**

@@ -31,7 +31,7 @@
 
 package com.translationexchange.android.activities;
 
-import com.translationexchange.android.Tml;
+import com.translationexchange.android.TmlAndroid;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -57,7 +57,7 @@ public class InAppTranslatorActivity extends Activity {
         
         WebView webView = new WebView(this);
 		webView.getSettings().setJavaScriptEnabled(true);
-		webView.loadUrl(Tml.getSession().getApplication().getHost() + "/mobile/login");
+		webView.loadUrl(TmlAndroid.getSession().getApplication().getHost() + "/mobile/login");
 		
 		layout.addView(webView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		setContentView(layout);

@@ -34,7 +34,7 @@ package com.translationexchange.android.interfaces;
 
 public interface Initializable {
 	/**
-	 * Called before Tml is initialized 
+	 * Called before TmlAndroid is initialized
 	 */
     public void onBeforeInit();
 
@@ -44,7 +44,7 @@ public interface Initializable {
     public void onInit();
     
     /**
-     * Called after Tml is initialized
+     * Called after TmlAndroid is initialized
      */
     public void onAfterInit();
 }
