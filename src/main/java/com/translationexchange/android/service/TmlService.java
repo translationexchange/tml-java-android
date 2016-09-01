@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
+import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.logger.Logger;
@@ -30,7 +32,7 @@ public class TmlService extends IntentService {
         super("TmlService");
     }
 
-    public static void startInit(Context context, TmlMode tmlMode) {
+    public static void startInit(Context context, TmlMode tmlMode, String zip) {
         TmlAndroid.getConfig().setLogger(Utils.buildMap(
                 "class", Logger.class.getName()
         ));
@@ -47,6 +49,7 @@ public class TmlService extends IntentService {
         TmlAndroid.addObject(context);
         Intent intent = new Intent(context, TmlService.class);
         intent.setAction(ACTION_INIT);
+        intent.putExtra("zip", zip);
         context.startService(intent);
     }
 
@@ -62,20 +65,20 @@ public class TmlService extends IntentService {
         if (intent != null) {
             String action = intent.getAction();
             if (action.equals(ACTION_INIT)) {
-                actionInit(getApplicationContext());
+                actionInit(getApplicationContext(), intent.getStringExtra("zip"));
             } else if (action.equals(ACTION_UPDATE)) {
                 actionUpdate();
             }
         }
     }
 
-    private static void actionInit(Context context) {
+    private static void actionInit(Context context, String zipVersion) {
         try {
-            if (!TmlAndroid.hasCachedVersion("20160825154951")) {
+            if (!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasCachedVersion(zipVersion)) {
                 Cache cache = TmlAndroid.getCache();
                 if (cache != null && cache instanceof FileCache) {
                     FileCache fileCache = ((FileCache) cache);
-                    Decompress.unzipFromRes(context, "20160825154951", fileCache.getCachePath());
+                    Decompress.unzipFromRes(context, zipVersion, fileCache.getCachePath());
                 }
             }
 
