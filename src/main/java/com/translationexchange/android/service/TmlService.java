@@ -1,5 +1,6 @@
 package com.translationexchange.android.service;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +18,13 @@ import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.Cache;
 import com.translationexchange.core.languages.Language;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
 public class TmlService extends IntentService {
     private static final String ACTION_INIT = "com.translationexchange.android.action.INIT";
+    private static final String ACTION_UPDATE = "com.translationexchange.android.action.UPDATE";
 
     public TmlService() {
         super("TmlService");
@@ -47,12 +50,21 @@ public class TmlService extends IntentService {
         context.startService(intent);
     }
 
+    public static void startUpdate(Context context) {
+        TmlAndroid.addObject(context);
+        Intent intent = new Intent(context, TmlService.class);
+        intent.setAction(ACTION_UPDATE);
+        context.startService(intent);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             String action = intent.getAction();
             if (action.equals(ACTION_INIT)) {
                 actionInit(getApplicationContext());
+            } else if (action.equals(ACTION_UPDATE)) {
+                actionUpdate();
             }
         }
     }
@@ -81,19 +93,48 @@ public class TmlService extends IntentService {
                 TmlAndroid.initSource("index", language.getLocale());
             }
         } finally {
-            try {
-                for (Object o : TmlAndroid.getObjects()) {
-                    Method[] m = o.getClass().getDeclaredMethods();
-                    for (Method method : m) {
-                        if (method.isAnnotationPresent(com.translationexchange.android.interfaces.TmlAnnotation.class)) {
-                            method.invoke(o);
-                        }
+            update();
+        }
+    }
+
+    private static void actionUpdate() {
+        try {
+            TmlAndroid.setSession(new Session(TmlAndroid.getConfig().getApplication()));
+
+            Locale locale = new Locale("ru", "ua");
+            TmlAndroid.getLogger().debug("System locale: " + locale);
+
+            if (!TmlAndroid.getApplication().isSupportedLocale(locale.getLanguage()))
+                return;
+
+            Language language = TmlAndroid.getApplication().getLanguage(locale.getLanguage());
+            if (language != null && language.isLoaded()) {
+                TmlAndroid.switchLanguage(language);
+                TmlAndroid.initSource("index", language.getLocale());
+            }
+        } finally {
+            update();
+        }
+    }
+
+    private static void update() {
+        for (final Object o : TmlAndroid.getObjects()) {
+            Method[] m = o.getClass().getDeclaredMethods();
+            for (final Method method : m) {
+                if (method.isAnnotationPresent(com.translationexchange.android.interfaces.TmlAnnotation.class)) {
+                    if (o instanceof Activity) {
+                        ((Activity) o).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    method.invoke(o);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                     }
                 }
-
-                TmlAndroid.getObjects().clear();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
     }

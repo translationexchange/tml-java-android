@@ -54,6 +54,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     public static void init(Context context, TmlMode tmlMode) {
         if (getSession() == null) {
             TmlService.startInit(context, tmlMode);
+        } else {
+            TmlService.startUpdate(context);
         }
 //        startScheduledTasks();
     }
