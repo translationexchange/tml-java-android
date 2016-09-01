@@ -3,6 +3,7 @@ package com.translationexchange.android.utils;
 import android.content.Context;
 
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.core.cache.CacheVersion;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -41,6 +42,7 @@ public class Decompress {
                 org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
                 jsonObject.put("t", calendar.getTimeInMillis());
                 jsonObject.put("version", version);
+                jsonObject.put("expired_in", calendar.getTimeInMillis() + CacheVersion.getVerificationInterval());
                 FileUtils.writeToFile(versionFile, jsonObject.toString());
                 InputStream inputStream = context.getResources().openRawResource(resId);
                 unzip(inputStream, new File(destination, version).getPath());

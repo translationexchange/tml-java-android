@@ -50,9 +50,9 @@ import java.util.Locale;
 @SuppressLint("Registered")
 public abstract class InitializationActivity extends Activity implements Initializable {
 
-    public void startInit() {
-        new InitializationTask(this).execute();
-    }
+//    public void startInit() {
+//        new InitializationTask(this).execute();
+//    }
 
     /**
      * Override this method to configure anything in Tr8n before it is initialized

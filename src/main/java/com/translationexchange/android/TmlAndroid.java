@@ -31,35 +31,31 @@
 
 package com.translationexchange.android;
 
-import java.util.Map;
-
-import com.translationexchange.core.TranslationKey;
-import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
-
+import android.content.Context;
 import android.text.Spannable;
+
+import com.translationexchange.android.cache.FileCache;
+import com.translationexchange.android.service.TmlService;
+import com.translationexchange.core.TmlMode;
+import com.translationexchange.core.cache.Cache;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TmlAndroid extends com.translationexchange.core.Tml {
 
-    /**
-     * <p>init.</p>
-     */
-    public static void init() {
-        Map<String, Object> options = getConfig().getApplication();
-        init((String) options.get("key"), (String) options.get("token"), options);
-    }
+    private static List<Object> objects;
 
     /**
-     * Initializes the SDK
-     *
-     * @param key
-     * @param secret
-     * @param host
+     * <p>Initializes the SDK</p>
      */
-    public static void init(String key, String secret, String host) {
-        com.translationexchange.core.Tml.init(key, secret);
-        com.translationexchange.core.Tml.getConfig().addTokenizerClass(
-                TranslationKey.DEFAULT_TOKENIZERS_STYLED,
-                SpannableStringTokenizer.class.getName());
+    public static void init(Context context, TmlMode tmlMode) {
+        if (getSession() == null) {
+            TmlService.startInit(context, tmlMode);
+        }
+//        startScheduledTasks();
     }
 
     /**
@@ -69,7 +65,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return translated label
      */
     public static String translate(String label) {
-        return getSession().translate(label);
+        return getSession() == null ? label : getSession().translate(label);
     }
 
     /**
@@ -80,7 +76,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, String description) {
-        return getSession().translate(label, description);
+        return getSession() == null ? label : getSession().translate(label, description);
     }
 
     /**
@@ -92,7 +88,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, String description, Map<String, Object> tokens) {
-        return getSession().translate(label, description, tokens);
+        return getSession() == null ? label : getSession().translate(label, description, tokens);
     }
 
     /**
@@ -103,7 +99,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, Map<String, Object> tokens) {
-        return getSession().translate(label, tokens);
+        return getSession() == null ? label : getSession().translate(label, tokens);
     }
 
     /**
@@ -115,7 +111,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, Map<String, Object> tokens, Map<String, Object> options) {
-        return getSession().translate(label, tokens, options);
+        return getSession() == null ? label : getSession().translate(label, tokens, options);
     }
 
     /**
@@ -187,4 +183,31 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         return (Spannable) com.translationexchange.core.Tml.getSession().translateStyledString(label, tokens, options);
     }
 
+    public static boolean hasCachedVersion(String version) {
+        Cache cache = TmlAndroid.getCache();
+        if (cache != null && cache instanceof FileCache) {
+            FileCache fileCache = ((FileCache) cache);
+            return new File(fileCache.getCachePath(), version).exists();
+        }
+        return false;
+    }
+
+    public static List<Object> getObjects() {
+        if (objects == null) {
+            objects = new ArrayList<>();
+        }
+        return objects;
+    }
+
+    public static void addObject(Object c) {
+        if (!getObjects().contains(c)) {
+            getObjects().add(c);
+        }
+    }
+
+    public static void removeObject(Object c) {
+        if (getObjects().contains(c)) {
+            getObjects().remove(c);
+        }
+    }
 }

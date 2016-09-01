@@ -32,6 +32,7 @@
 package com.translationexchange.android.cache;
 
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 
 import java.io.File;
@@ -100,6 +101,30 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
 
         } else {
             return super.fetch(key, options);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @param key
+     * @param data
+     * @param options
+     */
+    @Override
+    public void store(String key, Object data, Map<String, Object> options) {
+        if (key.contains("source")) {
+            String local = key.substring(0, key.indexOf("/"));
+            String currentVersion = (String) options.get("current_version");
+            File file = new File(getCachePath(), currentVersion + File.separator + local + "/translations.json");
+            try {
+                Tml.getLogger().debug("Writing cache to :" + file);
+                writeFile(file, data);
+            } catch (Exception ex) {
+                Tml.getLogger().logException("Failed to write cache to file", ex);
+            }
+        } else {
+            super.store(key, data, options);
         }
     }
 }
