@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Translation Exchange, Inc. All rights reserved.
- * <p/>
+ * <p>
  * _______                  _       _   _             ______          _
  * |__   __|                | |     | | (_)           |  ____|        | |
  * | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
@@ -16,10 +16,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * <p/>
+ * <p>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * <p/>
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -31,66 +31,37 @@
 
 package com.translationexchange.android.activities;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 import com.translationexchange.android.R;
-import com.translationexchange.android.TmlAndroid;
 
-@SuppressLint("SetJavaScriptEnabled")
-public class InAppTranslatorActivity extends AppCompatActivity {
-
-    private ProgressBar progressBar;
+public class OptionActivity extends AppCompatActivity implements View.OnClickListener {
+    private View btnTranslation;
+    private View btnChangeLanguage;
+    private View btnAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
-        progressBar = (ProgressBar) findViewById(R.id.progress);
-        WebView webView = (WebView) findViewById(R.id.web_view);
-        webView.getSettings().setJavaScriptEnabled(true);
+        setContentView(R.layout.activity_option_auth);
+        (btnTranslation = findViewById(R.id.btn_translation)).setOnClickListener(this);
+        (btnChangeLanguage = findViewById(R.id.btn_change_language)).setOnClickListener(this);
+        (btnAuth = findViewById(R.id.btn_auth)).setOnClickListener(this);
+    }
 
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return true;
-            }
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == btnTranslation.getId()) {
 
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                progressBar.setProgress(0);
-                progressBar.setVisibility(View.VISIBLE);
-            }
+        } else if (id == btnChangeLanguage.getId()) {
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                progressBar.setProgress(newProgress);
-            }
-        });
-
-        webView.loadUrl(TmlAndroid.getSession().getApplication().getAuthUrl());
+        } else if (id == btnAuth.getId()) {
+            startActivity(new Intent(getApplicationContext(), InAppTranslatorActivity.class));
+        }
     }
 }

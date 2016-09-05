@@ -31,11 +31,19 @@
 
 package com.translationexchange.android;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.text.Spannable;
+import android.view.MotionEvent;
+import android.view.View;
 
+import com.translationexchange.android.activities.OptionActivity;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.service.TmlService;
+import com.translationexchange.core.Tml;
 import com.translationexchange.core.TmlMode;
 import com.translationexchange.core.cache.Cache;
 
@@ -47,24 +55,88 @@ import java.util.Map;
 public class TmlAndroid extends com.translationexchange.core.Tml {
 
     private static List<Object> objects;
+    private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
 
     /**
      * <p>Initializes the SDK</p>
      */
-    public static void init(Context context, TmlMode tmlMode) {
-        init(context, tmlMode, null);
+    public static void init(Activity activity, TmlMode tmlMode) {
+        init(activity, tmlMode, null);
     }
 
     /**
      * <p>Initializes the SDK</p>
      */
-    public static void init(Context context, TmlMode tmlMode, String zip) {
+    public static void init(Activity activity, TmlMode tmlMode, String zip) {
         if (getSession() == null) {
-            TmlService.startInit(context, tmlMode, zip);
-        } else {
-            TmlService.startUpdate(context);
+            TmlService.startInit(activity, tmlMode, zip);
         }
+        startRecognizeTouch(activity);
 //        startScheduledTasks();
+    }
+
+    public static void destroy(Activity activity) {
+        TmlAndroid.removeObject(activity);
+        setSession(null);
+        if (activityLifecycleCallbacks != null) {
+            activity.getApplication().unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+            activityLifecycleCallbacks = null;
+        }
+    }
+
+    private static void startRecognizeTouch(Context activity) {
+        if (activityLifecycleCallbacks == null) {
+            ((Application) activity.getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+                @Override
+                public void onActivityCreated(Activity activity, Bundle bundle) {
+                    Tml.getLogger().error("onActivityCreated", activity.getClass().getSimpleName());
+                }
+
+                @Override
+                public void onActivityStarted(Activity activity) {
+                    Tml.getLogger().error("onActivityStarted", activity.getClass().getSimpleName());
+                    View view = activity.findViewById(android.R.id.content);
+                    if (view != null) {
+                        view.setOnTouchListener(new View.OnTouchListener() {
+
+                            @Override
+                            public boolean onTouch(View view, MotionEvent event) {
+                                if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
+                                    view.getContext().startActivity(new Intent(view.getContext(), OptionActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    return false;
+                                }
+                                return true;
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onActivityResumed(Activity activity) {
+                    Tml.getLogger().error("onActivityResumed", activity.getClass().getSimpleName());
+                }
+
+                @Override
+                public void onActivityPaused(Activity activity) {
+
+                }
+
+                @Override
+                public void onActivityStopped(Activity activity) {
+
+                }
+
+                @Override
+                public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+                }
+
+                @Override
+                public void onActivityDestroyed(Activity activity) {
+
+                }
+            });
+        }
     }
 
     /**

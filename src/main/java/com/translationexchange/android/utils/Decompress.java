@@ -82,7 +82,6 @@ public class Decompress {
                         while ((count = is.read(buffer)) != -1) {
                             fout.write(buffer, 0, count);
                         }
-//                        is.close();
                         fout.close();
                     }
                 }
