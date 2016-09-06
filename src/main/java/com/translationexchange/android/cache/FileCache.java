@@ -32,8 +32,10 @@
 package com.translationexchange.android.cache;
 
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.core.Application;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
+import com.translationexchange.core.cache.CacheVersion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -126,5 +128,36 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
         } else {
             super.store(key, data, options);
         }
+    }
+
+    /**
+     * Verify that the current cache version is correct
+     * Check it against the API
+     */
+    public CacheVersion verifyCacheVersion(Application application) throws Exception {
+        if (cacheVersion != null)
+            return cacheVersion;
+
+        cacheVersion = new CacheVersion();
+
+        // load version from local cache
+        Tml.getLogger().debug("load version from local cache...");
+        cacheVersion.fetchFromCache();
+        cacheVersion.setTmlMode(Tml.getConfig().getTmlMode());
+        // load version from server
+        switch (Tml.getConfig().getTmlMode()) {
+            case API_LIVE:
+                cacheVersion.setVersion("live");
+                cacheVersion.markAsUpdated();
+                Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
+                break;
+            case CDN:
+            case NONE:
+                Tml.getLogger().debug("load version from the server...");
+                cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.buildMap("uncompressed", true)));
+                break;
+        }
+        Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
+        return cacheVersion;
     }
 }
