@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Translation Exchange, Inc. All rights reserved.
- * <p>
+ * <p/>
  * _______                  _       _   _             ______          _
  * |__   __|                | |     | | (_)           |  ____|        | |
  * | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
@@ -16,10 +16,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * <p>
+ * <p/>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * <p>
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -95,6 +95,7 @@ public class InAppTranslatorActivity extends AppCompatActivity {
             }
         });
 
+        TmlAndroid.getLogger().info("web_auth_url", TmlAndroid.getSession().getApplication().getAuthUrl());
         webView.loadUrl(TmlAndroid.getSession().getApplication().getAuthUrl());
     }
 }
