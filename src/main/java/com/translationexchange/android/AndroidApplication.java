@@ -1,9 +1,14 @@
 package com.translationexchange.android;
 
+import android.content.Context;
+import android.content.Intent;
+
+import com.translationexchange.android.activities.InAppTranslatorActivity;
 import com.translationexchange.android.model.Auth;
 import com.translationexchange.android.utils.AndroidHttpClient;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
+import com.translationexchange.core.Utils;
 
 import java.util.Map;
 
@@ -13,6 +18,7 @@ import java.util.Map;
 public class AndroidApplication extends Application {
 
     private AndroidHttpClient httpClient;
+    private Auth auth;
 
     /**
      * Default constructor
@@ -38,12 +44,30 @@ public class AndroidApplication extends Application {
     @Override
     public String getAccessToken() {
         if (super.getAccessToken() == null) {
-            Auth auth = Auth.getAuth();
+            auth = Auth.getAuth();
             if (auth != null) {
                 super.setAccessToken(auth.getAccessToken());
             }
         }
+        if (auth != null && auth.isExpired()) {
+            clearAccessCode();
+        }
         return super.getAccessToken();
+    }
+
+    @Override
+    public void clearAccessCode() {
+        super.clearAccessCode();
+        auth = null;
+        super.setAccessToken(null);
+        TmlAndroid.getCache().delete("auth", Utils.buildMap());
+        if (!TmlAndroid.getObjects().isEmpty()) {
+            Object o = TmlAndroid.getObjects().get(0);
+            if (o instanceof Context) {
+                Context context = (Context) o;
+                context.startActivity(new Intent(context, InAppTranslatorActivity.class));
+            }
+        }
     }
 
     @Override

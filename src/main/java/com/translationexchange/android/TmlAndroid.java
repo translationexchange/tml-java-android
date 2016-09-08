@@ -60,13 +60,6 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     /**
      * <p>Initializes the SDK</p>
      */
-    public static void init(Activity activity, TmlMode tmlMode) {
-        init(activity, tmlMode, null);
-    }
-
-    /**
-     * <p>Initializes the SDK</p>
-     */
     public static void init(Activity activity, TmlMode tmlMode, String zip) {
         if (getSession() == null) {
             TmlService.startInit(activity, tmlMode, zip);

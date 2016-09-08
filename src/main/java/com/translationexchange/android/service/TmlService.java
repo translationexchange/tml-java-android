@@ -11,7 +11,6 @@ import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.logger.Logger;
 import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
-import com.translationexchange.android.utils.AndroidHttpClient;
 import com.translationexchange.android.utils.Decompress;
 import com.translationexchange.android.utils.FileUtils;
 import com.translationexchange.core.Session;
@@ -76,7 +75,7 @@ public class TmlService extends IntentService {
             }
 
             TmlAndroid.setSession(new Session());
-
+            TmlAndroid.getApplication().getAccessToken();
             Locale locale = new Locale("ru", "ua");
             TmlAndroid.getLogger().debug("System locale: " + locale);
 

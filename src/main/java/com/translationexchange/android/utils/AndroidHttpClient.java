@@ -1,11 +1,19 @@
 package com.translationexchange.android.utils;
 
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -63,5 +71,51 @@ public class AndroidHttpClient extends HttpClient {
 
         Tml.getCache().store(cacheKey, responseText, options);
         return result;
+    }
+
+    @Override
+    public Object post(String path, Map<String, Object> params, Map<String, Object> options) throws Exception {
+        if (getAccessToken() == null) {
+            throw new IOException("Unauthorized");
+        }
+        URL url = Utils.buildURL(getApplication().getHost(), API_PATH + path, Utils.buildMap("access_token", getAccessToken()));
+
+        Tml.getLogger().debug("HTTP Post: " + url.toString());
+        Tml.getLogger().debug("HTTP Params: " + params.toString());
+
+        long t0 = new Date().getTime();
+
+        FormEncodingBuilder formBuilder = new FormEncodingBuilder();
+
+        Iterator entries = params.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry entry = (Map.Entry) entries.next();
+            formBuilder = formBuilder.add((String) entry.getKey(), (String) entry.getValue());
+        }
+        RequestBody formBody = formBuilder.build();
+
+        Request.Builder builder = new Request.Builder()
+                .url(url.toString())
+                .addHeader("User-Agent", Tml.getFullVersion());
+//                .addHeader("Authorization", "Access-Token " + getAccessToken());
+        builder = builder.post(formBody);
+        Request request = builder.build();
+
+        Response response = getOkHttpClient().newCall(request).execute();
+        if (!response.isSuccessful()) {
+            if (response.code() == 401 || response.code() == 403) {
+                clearAccessCode();
+            }
+            throw new IOException("Unexpected code " + response);
+        }
+//        String responseStr = response.body().string();
+//        Tml.getLogger().debug(responseStr);
+
+        long t1 = new Date().getTime();
+
+        Tml.getLogger().debug("HTTP Post took: " + (t1 - t0) + " mls");
+        String responseText = response.body().string();
+        Tml.getLogger().debug("HTTP Post response: " + responseText);
+        return responseText;
     }
 }

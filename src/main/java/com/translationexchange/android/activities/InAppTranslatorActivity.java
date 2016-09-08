@@ -36,7 +36,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -45,11 +44,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.google.gson.Gson;
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.model.Auth;
-import com.translationexchange.core.Utils;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppTranslatorActivity extends AppCompatActivity {
@@ -109,6 +106,7 @@ public class InAppTranslatorActivity extends AppCompatActivity {
         @JavascriptInterface
         public void postMessage(String message) {
             Auth.saveAuth(message);
+            activity.finish();
         }
     }
 

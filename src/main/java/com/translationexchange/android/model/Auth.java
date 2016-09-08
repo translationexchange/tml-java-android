@@ -1,11 +1,14 @@
 package com.translationexchange.android.model;
 
+import android.text.format.DateUtils;
 import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.core.Utils;
+
+import java.util.GregorianCalendar;
 
 /**
  * Created by ababenko on 9/7/16.
@@ -14,6 +17,8 @@ public class Auth {
     private String status;
     @SerializedName("access_token")
     private String accessToken;
+    @SerializedName("created_at")
+    private long createdAt;
     private Project project;
     private Translator translator;
 
@@ -23,6 +28,15 @@ public class Auth {
 
     public String getAccessToken() {
         return accessToken;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public boolean isExpired() {
+        long now = GregorianCalendar.getInstance().getTimeInMillis();
+        return (now - createdAt) >= 12 * DateUtils.HOUR_IN_MILLIS;
     }
 
     public Project getProject() {
@@ -44,8 +58,19 @@ public class Auth {
         return null;
     }
 
-    public static void saveAuth(String auth) {
-        TmlAndroid.getCache().store("auth", auth, Utils.buildMap());
+    public static void saveAuth(String message) {
+        byte[] dataDecoded = Base64.decode(message, Base64.DEFAULT);
+        String s = new String(dataDecoded);
+        Gson gson = new Gson();
+        Auth auth = gson.fromJson(s, Auth.class);
+        auth.createdAt = GregorianCalendar.getInstance().getTimeInMillis();
+        message = gson.toJson(auth);
+        byte[] bytes = Base64.encode(message.getBytes(), Base64.DEFAULT);
+        TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
+    }
+
+    public static void clear(){
+        TmlAndroid.getCache().delete("auth", Utils.buildMap());
     }
 
     @Override
@@ -53,6 +78,7 @@ public class Auth {
         return "Auth {" +
                 "status='" + status + '\'' +
                 ", accessToken='" + accessToken + '\'' +
+                ", createdAt='" + createdAt + '\'' +
                 ", project=" + project +
                 ", translator=" + translator +
                 '}';
