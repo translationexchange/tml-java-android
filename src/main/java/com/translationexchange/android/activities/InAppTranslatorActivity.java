@@ -34,22 +34,22 @@ package com.translationexchange.android.activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
+import android.util.Base64;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
-import com.translationexchange.android.interfaces.WebAppInterface;
+import com.translationexchange.android.model.Auth;
+import com.translationexchange.core.Utils;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppTranslatorActivity extends AppCompatActivity {
@@ -63,7 +63,7 @@ public class InAppTranslatorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auth);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         WebView webView = (WebView) findViewById(R.id.web_view);
-        webView.addJavascriptInterface(new WebAppInterface(), "tmlMessageHandler");
+        webView.addJavascriptInterface(new WebAppInterface(this), "tmlMessageHandler");
         webView.getSettings().setJavaScriptEnabled(true);
 
 
@@ -98,4 +98,18 @@ public class InAppTranslatorActivity extends AppCompatActivity {
         TmlAndroid.getLogger().info("web_auth_url", TmlAndroid.getSession().getApplication().getAuthUrl());
         webView.loadUrl(TmlAndroid.getSession().getApplication().getAuthUrl());
     }
+
+    public static class WebAppInterface {
+        private Activity activity;
+
+        public WebAppInterface(Activity activity) {
+            this.activity = activity;
+        }
+
+        @JavascriptInterface
+        public void postMessage(String message) {
+            Auth.saveAuth(message);
+        }
+    }
+
 }

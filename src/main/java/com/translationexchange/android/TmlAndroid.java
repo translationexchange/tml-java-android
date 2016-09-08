@@ -70,12 +70,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     public static void init(Activity activity, TmlMode tmlMode, String zip) {
         if (getSession() == null) {
             TmlService.startInit(activity, tmlMode, zip);
+            startScheduledTasks();
         }
         startRecognizeTouch(activity);
-//        startScheduledTasks();
     }
 
     public static void destroy(Activity activity) {
+        stopScheduledTasks();
         TmlAndroid.removeObject(activity);
         setSession(null);
         if (activityLifecycleCallbacks != null) {

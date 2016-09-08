@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
+import com.translationexchange.android.AndroidApplication;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.logger.Logger;
 import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
+import com.translationexchange.android.utils.AndroidHttpClient;
 import com.translationexchange.android.utils.Decompress;
 import com.translationexchange.android.utils.FileUtils;
 import com.translationexchange.core.Session;
@@ -40,10 +42,13 @@ public class TmlService extends IntentService {
                 "cache_dir", FileUtils.getBaseDirectory(context)
         ));
 
+        TmlAndroid.getConfig().setApplicationClass(AndroidApplication.class.getName());
+
         TmlAndroid.getConfig().setAndroidApp(true);
         TmlAndroid.getConfig().setTmlMode(tmlMode);
         TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
         TmlAndroid.addObject(context);
+
         Intent intent = new Intent(context, TmlService.class);
         intent.setAction(ACTION_INIT);
         intent.putExtra("zip", zip);
