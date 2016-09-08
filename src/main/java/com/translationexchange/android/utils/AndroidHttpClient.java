@@ -4,6 +4,7 @@ import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Tml;
@@ -104,7 +105,7 @@ public class AndroidHttpClient extends HttpClient {
         Response response = getOkHttpClient().newCall(request).execute();
         if (!response.isSuccessful()) {
             if (response.code() == 401 || response.code() == 403) {
-                clearAccessCode();
+                TmlAndroid.getAndroidApplication().clearAccessCode(true);
             }
             throw new IOException("Unexpected code " + response);
         }

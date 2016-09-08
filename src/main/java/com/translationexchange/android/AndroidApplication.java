@@ -1,14 +1,12 @@
 package com.translationexchange.android;
 
 import android.content.Context;
-import android.content.Intent;
 
 import com.translationexchange.android.activities.InAppTranslatorActivity;
 import com.translationexchange.android.model.Auth;
 import com.translationexchange.android.utils.AndroidHttpClient;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
-import com.translationexchange.core.Utils;
 
 import java.util.Map;
 
@@ -50,22 +48,20 @@ public class AndroidApplication extends Application {
             }
         }
         if (auth != null && auth.isExpired()) {
-            clearAccessCode();
+            clearAccessCode(true);
         }
         return super.getAccessToken();
     }
 
-    @Override
-    public void clearAccessCode() {
-        super.clearAccessCode();
+    public void clearAccessCode(boolean openAuth) {
         auth = null;
         super.setAccessToken(null);
-        TmlAndroid.getCache().delete("auth", Utils.buildMap());
-        if (!TmlAndroid.getObjects().isEmpty()) {
+        Auth.clear();
+        if (!TmlAndroid.getObjects().isEmpty() && openAuth) {
             Object o = TmlAndroid.getObjects().get(0);
             if (o instanceof Context) {
                 Context context = (Context) o;
-                context.startActivity(new Intent(context, InAppTranslatorActivity.class));
+                InAppTranslatorActivity.auth(context);
             }
         }
     }

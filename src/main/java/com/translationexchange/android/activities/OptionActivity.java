@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 Translation Exchange, Inc. All rights reserved.
- * <p>
+ * <p/>
  * _______                  _       _   _             ______          _
  * |__   __|                | |     | | (_)           |  ____|        | |
  * | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
@@ -16,10 +16,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * <p>
+ * <p/>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * <p>
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -31,18 +31,20 @@
 
 package com.translationexchange.android.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.translationexchange.android.R;
+import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.model.Auth;
 
 public class OptionActivity extends AppCompatActivity implements View.OnClickListener {
     private View btnTranslation;
     private View btnChangeLanguage;
-    private View btnAuth;
+    private TextView btnAuth;
+    private boolean isAuthValid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,19 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_option_auth);
         (btnTranslation = findViewById(R.id.btn_translation)).setOnClickListener(this);
         (btnChangeLanguage = findViewById(R.id.btn_change_language)).setOnClickListener(this);
-        (btnAuth = findViewById(R.id.btn_auth)).setOnClickListener(this);
+        (btnAuth = (TextView) findViewById(R.id.btn_auth)).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Auth auth = Auth.getAuth();
+        isAuthValid = auth != null && !auth.isExpired();
+        if (isAuthValid) {
+            btnAuth.setText(TmlAndroid.translate("Sign Out"));
+        } else {
+            btnAuth.setText(TmlAndroid.translate("Sign In"));
+        }
     }
 
     @Override
@@ -61,7 +75,14 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         } else if (id == btnChangeLanguage.getId()) {
 
         } else if (id == btnAuth.getId()) {
-            startActivity(new Intent(getApplicationContext(), InAppTranslatorActivity.class));
+            if (isAuthValid) {
+                Auth.clear();
+                TmlAndroid.getAndroidApplication().clearAccessCode(false);
+                InAppTranslatorActivity.logout(this);
+            } else {
+                InAppTranslatorActivity.auth(this);
+            }
+
         }
     }
 }

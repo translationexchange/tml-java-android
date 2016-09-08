@@ -285,4 +285,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
             getObjects().remove(c);
         }
     }
+
+    public static AndroidApplication getAndroidApplication() {
+        return (AndroidApplication) getApplication();
+    }
 }

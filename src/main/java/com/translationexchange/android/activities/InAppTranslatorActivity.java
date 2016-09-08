@@ -33,6 +33,8 @@ package com.translationexchange.android.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +52,14 @@ import com.translationexchange.android.model.Auth;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class InAppTranslatorActivity extends AppCompatActivity {
+
+    public static void auth(Context context) {
+        context.startActivity(new Intent(context, InAppTranslatorActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getAuthUrl()));
+    }
+
+    public static void logout(Context context) {
+        context.startActivity(new Intent(context, InAppTranslatorActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getLogoutUrl()));
+    }
 
     private ProgressBar progressBar;
 
@@ -92,8 +102,9 @@ public class InAppTranslatorActivity extends AppCompatActivity {
             }
         });
 
-        TmlAndroid.getLogger().info("web_auth_url", TmlAndroid.getSession().getApplication().getAuthUrl());
-        webView.loadUrl(TmlAndroid.getSession().getApplication().getAuthUrl());
+        String url = getIntent().getStringExtra("url");
+        TmlAndroid.getLogger().info("web_auth_url", url);
+        webView.loadUrl(url);
     }
 
     public static class WebAppInterface {
