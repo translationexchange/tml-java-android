@@ -3,4 +3,8 @@
     <color name="text_color">#8033b5e5</color>
     <color name="text_color_pressed">#ff0099cc</color>
     <color name="background">#ddd</color>
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
 </resources>

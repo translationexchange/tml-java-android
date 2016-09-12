@@ -32,7 +32,6 @@
 package com.translationexchange.android.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
@@ -40,7 +39,7 @@ import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.model.Auth;
 
-public class OptionActivity extends AppCompatActivity implements View.OnClickListener {
+public class TmlAndroidActivity extends BaseActivity implements View.OnClickListener {
     private View btnTranslation;
     private View btnChangeLanguage;
     private TextView btnAuth;
@@ -73,14 +72,14 @@ public class OptionActivity extends AppCompatActivity implements View.OnClickLis
         if (id == btnTranslation.getId()) {
 
         } else if (id == btnChangeLanguage.getId()) {
-
+            LanguageSelectorActivity.open(this);
         } else if (id == btnAuth.getId()) {
             if (isAuthValid) {
                 Auth.clear();
                 TmlAndroid.getAndroidApplication().clearAccessCode(false);
-                InAppTranslatorActivity.logout(this);
+                AuthorizationActivity.logout(this);
             } else {
-                InAppTranslatorActivity.auth(this);
+                AuthorizationActivity.auth(this);
             }
 
         }

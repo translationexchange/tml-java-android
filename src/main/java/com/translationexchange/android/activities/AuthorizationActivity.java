@@ -37,7 +37,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -51,14 +50,14 @@ import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.model.Auth;
 
 @SuppressLint("SetJavaScriptEnabled")
-public class InAppTranslatorActivity extends AppCompatActivity {
+public class AuthorizationActivity extends BaseActivity {
 
     public static void auth(Context context) {
-        context.startActivity(new Intent(context, InAppTranslatorActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getAuthUrl()));
+        context.startActivity(new Intent(context, AuthorizationActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getAuthUrl()));
     }
 
     public static void logout(Context context) {
-        context.startActivity(new Intent(context, InAppTranslatorActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getLogoutUrl()));
+        context.startActivity(new Intent(context, AuthorizationActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getLogoutUrl()));
     }
 
     private ProgressBar progressBar;

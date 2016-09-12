@@ -2,9 +2,8 @@ package com.translationexchange.android;
 
 import android.content.Context;
 
-import com.translationexchange.android.activities.InAppTranslatorActivity;
+import com.translationexchange.android.activities.AuthorizationActivity;
 import com.translationexchange.android.model.Auth;
-import com.translationexchange.android.utils.AndroidHttpClient;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 
@@ -61,7 +60,7 @@ public class AndroidApplication extends Application {
             Object o = TmlAndroid.getObjects().get(0);
             if (o instanceof Context) {
                 Context context = (Context) o;
-                InAppTranslatorActivity.auth(context);
+                AuthorizationActivity.auth(context);
             }
         }
     }

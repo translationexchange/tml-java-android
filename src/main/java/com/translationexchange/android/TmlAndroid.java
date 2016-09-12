@@ -40,9 +40,10 @@ import android.text.Spannable;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.translationexchange.android.activities.OptionActivity;
+import com.translationexchange.android.activities.TmlAndroidActivity;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.service.TmlService;
+import com.translationexchange.android.utils.ViewUtils;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.TmlMode;
 import com.translationexchange.core.cache.Cache;
@@ -89,14 +90,15 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                 @Override
                 public void onActivityStarted(Activity activity) {
                     Tml.getLogger().error("onActivityStarted", activity.getClass().getSimpleName());
-                    View view = activity.findViewById(android.R.id.content);
+                    View view = activity.getWindow().getDecorView();//activity.findViewById(android.R.id.content);
                     if (view != null) {
+                        ViewUtils.findViews(view);
                         view.setOnTouchListener(new View.OnTouchListener() {
 
                             @Override
                             public boolean onTouch(View view, MotionEvent event) {
                                 if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
-                                    view.getContext().startActivity(new Intent(view.getContext(), OptionActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    view.getContext().startActivity(new Intent(view.getContext(), TmlAndroidActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                                     return false;
                                 }
                                 return true;

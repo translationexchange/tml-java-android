@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2015 Translation Exchange, Inc. All rights reserved.
- *
- *  _______                  _       _   _             ______          _
+ * <p/>
+ * _______                  _       _   _             ______          _
  * |__   __|                | |     | | (_)           |  ____|        | |
- *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
- *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
- *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
- *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
- *                                                                                        __/ |
- *                                                                                       |___/
+ * | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
+ * | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
+ * | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
+ * |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
+ * __/ |
+ * |___/
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -16,10 +16,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p/>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- *
+ * <p/>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -31,82 +31,82 @@
 
 package com.translationexchange.android.activities;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 
-import com.translationexchange.core.Session;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.interfaces.Localizable;
 import com.translationexchange.android.tasks.LocalizationTask;
+import com.translationexchange.core.Session;
+
+import java.util.Observable;
+import java.util.Observer;
 
 @SuppressLint("Registered")
-public abstract class LocalizedActivity extends Activity implements Localizable, Observer {
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+public abstract class LocalizedActivity extends BaseActivity implements Localizable, Observer {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TmlAndroid.addObserver(this);
     }
-	
-	/**
-	 * Checks if network is available
-	 * @return
-	 */
-	public boolean isNetworkAvailable() {
-	    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-	}	
-	
-	/**
-	 * This method to be called once the UI is fully setup 
-	 */
-	public void translate() {
-		new LocalizationTask(this).execute();	
-	}
 
-	/**
-	 * Returns the source key of the activity
-	 */
-	public String getLocalizationSource() {
-		return getClass().getName(); 	
-	}
+    /**
+     * Checks if network is available
+     *
+     * @return
+     */
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
-	/**
-	 * Registers all sources referenced by the activity
-	 */
-	public void registerSources() {
-		TmlAndroid.initSource(getLocalizationSource());
-	}
-	
-	/**
-	 * By default every view will register its own source and all keys under it. 
-	 * In case your view needs languages other than the current language, ensure that the languages are loaded.
-	 * Use: Tr8n.initLanguage("ru")
-	 */
-	public void onBeforeLocalize() {
-		registerSources();
-	}
-	
-	/**
-	 * The main method where all translations should happen
-	 */
-	public void onLocalize() {
-		// TODO: go through the view hierarchy and translate all components 
-	}
-	
-	/**
-	 * When language changes, this message would be fired
-	 */
+    /**
+     * This method to be called once the UI is fully setup
+     */
+    public void translate() {
+        new LocalizationTask(this).execute();
+    }
+
+    /**
+     * Returns the source key of the activity
+     */
+    public String getLocalizationSource() {
+        return getClass().getName();
+    }
+
+    /**
+     * Registers all sources referenced by the activity
+     */
+    public void registerSources() {
+        TmlAndroid.initSource(getLocalizationSource());
+    }
+
+    /**
+     * By default every view will register its own source and all keys under it.
+     * In case your view needs languages other than the current language, ensure that the languages are loaded.
+     * Use: Tr8n.initLanguage("ru")
+     */
+    public void onBeforeLocalize() {
+        registerSources();
+    }
+
+    /**
+     * The main method where all translations should happen
+     */
+    public void onLocalize() {
+        // TODO: go through the view hierarchy and translate all components
+    }
+
+    /**
+     * When language changes, this message would be fired
+     */
     public void update(Observable observable, Object data) {
-    	if (observable instanceof Session)
-    		translate();	
+        if (observable instanceof Session)
+            translate();
     }
 }

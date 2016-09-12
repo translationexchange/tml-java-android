@@ -1,4 +1,4 @@
-package com.translationexchange.android.utils;
+package com.translationexchange.android;
 
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Request;
@@ -98,7 +98,6 @@ public class AndroidHttpClient extends HttpClient {
         Request.Builder builder = new Request.Builder()
                 .url(url.toString())
                 .addHeader("User-Agent", Tml.getFullVersion());
-//                .addHeader("Authorization", "Access-Token " + getAccessToken());
         builder = builder.post(formBody);
         Request request = builder.build();
 
@@ -109,9 +108,6 @@ public class AndroidHttpClient extends HttpClient {
             }
             throw new IOException("Unexpected code " + response);
         }
-//        String responseStr = response.body().string();
-//        Tml.getLogger().debug(responseStr);
-
         long t1 = new Date().getTime();
 
         Tml.getLogger().debug("HTTP Post took: " + (t1 - t0) + " mls");

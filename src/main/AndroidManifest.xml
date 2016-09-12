@@ -14,8 +14,15 @@
             android:name=".service.TmlService"
             android:exported="false" />
 
-        <activity android:name=".activities.OptionActivity" />
-        <activity android:name=".activities.InAppTranslatorActivity" />
+        <activity
+            android:name=".activities.TmlAndroidActivity"
+            android:label="Tml Android SDK" />
+        <activity
+            android:name=".activities.AuthorizationActivity"
+            android:label="Authorization" />
+        <activity
+            android:name=".activities.LanguageSelectorActivity"
+            android:label="Change language" />
     </application>
 
 </manifest>
