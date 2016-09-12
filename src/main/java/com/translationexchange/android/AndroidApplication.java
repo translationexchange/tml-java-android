@@ -41,7 +41,7 @@ public class AndroidApplication extends Application {
     @Override
     public String getAccessToken() {
         if (super.getAccessToken() == null) {
-            auth = Auth.getAuth();
+            getAuth();
             if (auth != null) {
                 super.setAccessToken(auth.getAccessToken());
             }
@@ -63,6 +63,17 @@ public class AndroidApplication extends Application {
                 AuthorizationActivity.auth(context);
             }
         }
+    }
+
+    public Auth getAuth() {
+        if (auth == null) {
+            auth = Auth.getAuth();
+        }
+        return auth;
+    }
+
+    public void setAuth(Auth auth) {
+        this.auth = auth;
     }
 
     @Override

@@ -14,6 +14,10 @@
         android:src="@drawable/logo_full" />
 
     <TextView
+        android:id="@+id/user_name"
+        style="@style/label_option_name" />
+
+    <TextView
         android:id="@+id/btn_change_language"
         style="@style/label_option"
         android:text="Change language" />

@@ -51,7 +51,6 @@ public class AndroidHttpClient extends HttpClient {
                 responseText = get(path, params, options);
                 break;
             case CDN:
-            case NONE:
                 responseText = getFromCDN(cacheKey, options);
                 break;
         }

@@ -79,9 +79,6 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         recyclerView.setAdapter(languageAdapter = new LanguageAdapter(this));
 
-//                LaguageListAdapter adapter = (LaguageListAdapter) ((ListView) parent).getAdapter();
-//                Language language = adapter.getLanguages().get(position);
-//                selectLanguage(language);
         loadLanguagesFromNetwork();
     }
 
@@ -128,33 +125,6 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
             }
 
         }.execute();
-    }
-
-    protected void selectLanguage(Language language) {
-        final ProgressDialog dialog = ProgressDialog.show(this, TmlAndroid.translate("Language Selector"), TmlAndroid.translate("Changing language..."));
-
-        new AsyncTask<Language, Void, Void>() {
-            Map<String, Object> options;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Language... languages) {
-                TmlAndroid.switchLanguage(languages[0], options);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                dialog.dismiss();
-                finish();
-            }
-
-        }.execute(language);
     }
 
     @Override

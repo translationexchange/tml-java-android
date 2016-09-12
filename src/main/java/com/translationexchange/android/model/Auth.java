@@ -19,6 +19,7 @@ public class Auth {
     private String accessToken;
     @SerializedName("created_at")
     private long createdAt;
+    private boolean inlineMode;
     private Project project;
     private Translator translator;
 
@@ -35,8 +36,21 @@ public class Auth {
     }
 
     public boolean isExpired() {
-        long now = GregorianCalendar.getInstance().getTimeInMillis();
-        return (now - createdAt) >= 12 * DateUtils.HOUR_IN_MILLIS;
+        long diff = GregorianCalendar.getInstance().getTimeInMillis() - createdAt;
+        long expiredIn = 12 * DateUtils.HOUR_IN_MILLIS;
+        return diff >= expiredIn;
+    }
+
+    public boolean isInlineMode() {
+        return inlineMode;
+    }
+
+    public void setInlineMode(boolean inlineMode) {
+        this.inlineMode = inlineMode;
+    }
+
+    public void toggleInlineMode() {
+        this.inlineMode = !this.inlineMode;
     }
 
     public Project getProject() {
@@ -69,7 +83,14 @@ public class Auth {
         TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
     }
 
-    public static void clear(){
+    public void save() {
+        Gson gson = new Gson();
+        String auth = gson.toJson(this);
+        byte[] bytes = Base64.encode(auth.getBytes(), Base64.DEFAULT);
+        TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
+    }
+
+    public static void clear() {
         TmlAndroid.getCache().delete("auth", Utils.buildMap());
     }
 

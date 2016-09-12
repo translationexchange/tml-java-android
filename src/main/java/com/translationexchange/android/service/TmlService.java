@@ -50,10 +50,14 @@ public class TmlService extends IntentService {
         TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
         TmlAndroid.addObject(context);
 
-        Intent intent = new Intent(context, TmlService.class);
-        intent.setAction(ACTION_INIT);
-        intent.putExtra("zip", zip);
-        context.startService(intent);
+        if (tmlMode == TmlMode.LOCAL) {
+            actionInit(context, zip);
+        } else {
+            Intent intent = new Intent(context, TmlService.class);
+            intent.setAction(ACTION_INIT);
+            intent.putExtra("zip", zip);
+            context.startService(intent);
+        }
     }
 
     public static void startChangeLanguage(Context context) {
@@ -134,7 +138,7 @@ public class TmlService extends IntentService {
                                 try {
                                     method.invoke(o);
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+//                                    e.printStackTrace();
                                 }
                             }
                         });

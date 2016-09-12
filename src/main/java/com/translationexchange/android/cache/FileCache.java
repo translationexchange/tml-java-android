@@ -152,7 +152,6 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
                 Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
                 break;
             case CDN:
-            case NONE:
                 Tml.getLogger().debug("load version from the server...");
                 cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.buildMap("uncompressed", true)));
                 break;

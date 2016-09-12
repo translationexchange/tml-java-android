@@ -20,6 +20,13 @@ public class ViewUtils {
                     findViews(child);
                 }
             } else if (v instanceof TextView) {
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        TmlAndroid.getLogger().debug("Find_TextView", ((TextView) view).getText().toString());
+                        return true;
+                    }
+                });
                 TmlAndroid.getLogger().debug("Find_TextView", ((TextView) v).getText().toString() + "\t" + "-" + "\t" + v.getClass().getSimpleName());
             }
         } catch (Exception e) {
