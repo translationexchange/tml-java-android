@@ -143,7 +143,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
         // load version from local cache
         Tml.getLogger().debug("load version from local cache...");
         cacheVersion.fetchFromCache();
-        cacheVersion.setTmlMode(Tml.getConfig().getTmlMode());
+//        cacheVersion.setTmlMode(Tml.getConfig().getTmlMode());
         // load version from server
         switch (Tml.getConfig().getTmlMode()) {
             case API_LIVE:

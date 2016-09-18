@@ -46,9 +46,12 @@ public class TmlService extends IntentService {
         TmlAndroid.getConfig().setApplicationClass(AndroidApplication.class.getName());
 
         TmlAndroid.getConfig().setAndroidApp(true);
-        TmlAndroid.getConfig().setTmlMode(tmlMode);
         TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
         TmlAndroid.addObject(context);
+
+//        TmlAndroid.getConfig().setTmlMode(TmlMode.LOCAL);
+//        actionInit(context, zip);
+        TmlAndroid.getConfig().setTmlMode(tmlMode);
 
         if (tmlMode == TmlMode.LOCAL) {
             actionInit(context, zip);

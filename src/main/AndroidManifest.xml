@@ -23,6 +23,9 @@
         <activity
             android:name=".activities.LanguageSelectorActivity"
             android:label="Change language" />
+        <activity
+            android:name=".activities.MobileTranslationCenterActivity"
+            android:label="Mobile translation center" />
     </application>
 
 </manifest>

@@ -6,6 +6,7 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.core.TmlMode;
 import com.translationexchange.core.Utils;
 
 import java.util.GregorianCalendar;
@@ -51,6 +52,13 @@ public class Auth {
 
     public void toggleInlineMode() {
         this.inlineMode = !this.inlineMode;
+        checkMode();
+    }
+
+    private void checkMode() {
+        if (this.inlineMode) {
+            TmlAndroid.getConfig().setTmlMode(TmlMode.API_LIVE);
+        }
     }
 
     public Project getProject() {
@@ -67,7 +75,9 @@ public class Auth {
             byte[] dataDecoded = Base64.decode(auth, Base64.DEFAULT);
             String s = new String(dataDecoded);
             Gson gson = new Gson();
-            return gson.fromJson(s, Auth.class);
+            Auth o = gson.fromJson(s, Auth.class);
+            o.checkMode();
+            return o;
         }
         return null;
     }

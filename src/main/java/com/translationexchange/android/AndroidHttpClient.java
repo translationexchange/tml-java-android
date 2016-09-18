@@ -1,21 +1,23 @@
 package com.translationexchange.android;
 
 import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by ababenko on 9/8/16.
@@ -30,6 +32,68 @@ public class AndroidHttpClient extends HttpClient {
         super(application);
     }
 
+    /**
+     * Instantiates and return OkHttp Client
+     *
+     * @return
+     */
+    protected OkHttpClient getOkHttpClient() {
+        if (client == null) {
+            client = new OkHttpClient();
+            client.setConnectTimeout(5, TimeUnit.SECONDS);
+            client.setWriteTimeout(5, TimeUnit.SECONDS);
+            client.setReadTimeout(5, TimeUnit.SECONDS);
+        }
+        return client;
+    }
+
+    /**
+     * Fetch data from the CDN
+     *
+     * @param cacheKey
+     * @return
+     */
+    public String getFromCDN(String cacheKey, Map<String, Object> options) throws Exception {
+        CacheVersion cacheVersion = Tml.getCache().verifyCacheVersion(getApplication());
+        if (cacheVersion.isUnreleased() && !cacheKey.equals("version"))
+            return null;
+
+        try {
+            String cachePath = cacheKey;
+
+            if (!cacheKey.startsWith(File.separator))
+                cachePath = File.separator + cachePath;
+
+            if (cacheKey.equals("version")) {
+                cachePath = getCdnPath(cachePath) + ".json";
+            } else
+                cachePath = getCdnPath(cacheVersion.getVersion() + cachePath) + ".json.gz";
+
+            String response = get(Utils.buildURL(getApplication().getCdnHost(), cachePath), options);
+
+            // check if CDN responded with an error, and return an empty JSON result
+            if (response.indexOf("<?xml") != -1) {
+                response = cacheKey.equals("version") ? null : "{}";
+            }
+
+            return response;
+        } catch (Exception ex) {
+            Tml.getLogger().error("Failed to get from CDN " + cacheKey + " with error: " + ex.getMessage());
+            return cacheKey.equals("version") ? (String) Tml.getCache().fetch(cacheVersion.getVersionKey(), Utils.buildMap("cache_key", CacheVersion.VERSION_KEY)) : null;
+        }
+    }
+
+    /**
+     * @return Application Key
+     * @throws Exception
+     */
+    private String getCdnPath(String path) throws Exception {
+        if (!path.startsWith(File.separator))
+            path = File.separator + path;
+
+        return getApplication().getKey() + path;
+    }
+
     @Override
     public Map<String, Object> getJSON(String path, Map<String, Object> params, Map<String, Object> options) throws Exception {
         String responseText = null;
@@ -37,6 +101,22 @@ public class AndroidHttpClient extends HttpClient {
         Map<String, Object> result = null;
 
         CacheVersion cacheVersion = Tml.getCache().verifyCacheVersion(getApplication());
+
+        if (cacheVersion.isExpired()) {
+            // load version from server
+            switch (Tml.getConfig().getTmlMode()) {
+                case API_LIVE:
+                    cacheVersion.setVersion("live");
+                    cacheVersion.markAsUpdated();
+                    Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
+                    break;
+                case CDN:
+                    Tml.getLogger().debug("load version from the server...");
+                    cacheVersion.updateFromCDN(getFromCDN("version", Utils.buildMap("uncompressed", true)));
+                    break;
+            }
+            Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
+        }
 
         // put the current version into options
         options.put(CacheVersion.VERSION_KEY, cacheVersion.getVersion());

@@ -6,6 +6,7 @@ import com.translationexchange.android.activities.AuthorizationActivity;
 import com.translationexchange.android.model.Auth;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
+import com.translationexchange.core.Source;
 
 import java.util.Map;
 
@@ -31,6 +32,11 @@ public class AndroidApplication extends Application {
      */
     public AndroidApplication(Map<String, Object> attributes) {
         super(attributes);
+    }
+
+    @Override
+    public Source getSource(String key, String locale, Map<String, Object> options) {
+        return super.getSource(key, locale, options);
     }
 
     /**
