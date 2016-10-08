@@ -105,7 +105,7 @@ public class SpannableStringTokenizer extends StyledTokenizer {
         while (entries.hasNext()) {
             Map.Entry<String, Object> entry = entries.next();
 
-            String styleName = (String) entry.getKey();
+            String styleName = entry.getKey();
             Object styleAttributes = entry.getValue();
 
             for (Map<String, Object> range : ranges) {
@@ -156,7 +156,7 @@ public class SpannableStringTokenizer extends StyledTokenizer {
 	            	addReplacementSpan(spannable, styleAttributes, start, end);
 	            } else if (styleName.equals("scale-x")) {
 	            	addScaleXSpan(spannable, styleAttributes, start, end);
-	            } else if (styleName.equals("strikethrough")) {
+	            } else if (styleName.equals("strike-through")) {
 	            	addStrikethroughSpan(spannable, styleAttributes, start, end);
 	            } else if (styleName.equals("style")) {
                 	addStyleSpan(spannable, styleAttributes, start, end);

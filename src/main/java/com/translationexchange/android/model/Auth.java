@@ -6,7 +6,6 @@ import android.util.Base64;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.translationexchange.android.TmlAndroid;
-import com.translationexchange.core.TmlMode;
 import com.translationexchange.core.Utils;
 
 import java.util.GregorianCalendar;
@@ -46,19 +45,8 @@ public class Auth {
         return inlineMode;
     }
 
-    public void setInlineMode(boolean inlineMode) {
-        this.inlineMode = inlineMode;
-    }
-
     public void toggleInlineMode() {
         this.inlineMode = !this.inlineMode;
-        checkMode();
-    }
-
-    private void checkMode() {
-        if (this.inlineMode) {
-            TmlAndroid.getConfig().setTmlMode(TmlMode.API_LIVE);
-        }
     }
 
     public Project getProject() {
@@ -76,8 +64,9 @@ public class Auth {
             String s = new String(dataDecoded);
             Gson gson = new Gson();
             Auth o = gson.fromJson(s, Auth.class);
-            o.checkMode();
-            return o;
+            if (!o.getStatus().equals("error")) {
+                return o;
+            }
         }
         return null;
     }
@@ -87,10 +76,13 @@ public class Auth {
         String s = new String(dataDecoded);
         Gson gson = new Gson();
         Auth auth = gson.fromJson(s, Auth.class);
-        auth.createdAt = GregorianCalendar.getInstance().getTimeInMillis();
-        message = gson.toJson(auth);
-        byte[] bytes = Base64.encode(message.getBytes(), Base64.DEFAULT);
-        TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
+        if (auth.getStatus().equals("authorized")) {
+            auth.createdAt = GregorianCalendar.getInstance().getTimeInMillis();
+            message = gson.toJson(auth);
+            byte[] bytes = Base64.encode(message.getBytes(), Base64.DEFAULT);
+            TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
+            TmlAndroid.setAuth(auth);
+        }
     }
 
     public void save() {
@@ -98,10 +90,6 @@ public class Auth {
         String auth = gson.toJson(this);
         byte[] bytes = Base64.encode(auth.getBytes(), Base64.DEFAULT);
         TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
-    }
-
-    public static void clear() {
-        TmlAndroid.getCache().delete("auth", Utils.buildMap());
     }
 
     @Override

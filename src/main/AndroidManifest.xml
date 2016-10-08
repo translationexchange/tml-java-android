@@ -25,7 +25,9 @@
             android:label="Change language" />
         <activity
             android:name=".activities.MobileTranslationCenterActivity"
-            android:label="Mobile translation center" />
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="Mobile translation center"
+            android:screenOrientation="nosensor" />
     </application>
 
 </manifest>

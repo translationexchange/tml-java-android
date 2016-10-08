@@ -40,7 +40,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -62,28 +61,28 @@ public class MobileTranslationCenterActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        setupActionBar(true);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         WebView webView = (WebView) findViewById(R.id.web_view);
         webView.addJavascriptInterface(new WebAppInterface(this), "tmlMessageHandler");
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
 
         webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//                return true;
-//            }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setProgress(0);
                 progressBar.setVisibility(View.VISIBLE);
+                TmlAndroid.getLogger().debug("web_Started", url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(View.GONE);
+                TmlAndroid.getLogger().debug("web_Finished", url);
             }
         });
 
@@ -109,8 +108,8 @@ public class MobileTranslationCenterActivity extends BaseActivity {
 
         @JavascriptInterface
         public void postMessage(String message) {
-//            Auth.saveAuth(message);
-            activity.finish();
+            TmlAndroid.getLogger().info("web_postMessage", message);
+//            activity.finish();
         }
     }
 

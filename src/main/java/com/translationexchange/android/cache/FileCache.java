@@ -57,9 +57,19 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
         return applicationPath;
     }
 
-    protected File getCachePath(String cacheKey) {
+    protected File getCachePath(String cacheKey, Map<String, Object> options) {
+//        if (cacheKey.equals("tml_current_version"))
+//            cacheKey = "version";
+
         List<String> parts = new ArrayList<>(Arrays.asList(cacheKey.split(Pattern.quote("/"))));
         String fileName = parts.remove(parts.size() - 1);
+
+        if (!cacheKey.equals("version")) {
+            // check if the version was hardcoded in the init, and use it, otherwise check options
+            String version = getConfigProperty("version", (String) options.get(CacheVersion.VERSION_KEY));
+            if (version != null)
+                parts.add(0, version);
+        }
 
         File fileCachePath = getCachePath();
         if (parts.size() > 0)
@@ -135,28 +145,19 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
      * Check it against the API
      */
     public CacheVersion verifyCacheVersion(Application application) throws Exception {
-        if (cacheVersion != null)
-            return cacheVersion;
-
-        cacheVersion = new CacheVersion();
-
-        // load version from local cache
-        Tml.getLogger().debug("load version from local cache...");
-        cacheVersion.fetchFromCache();
-//        cacheVersion.setTmlMode(Tml.getConfig().getTmlMode());
-        // load version from server
-        switch (Tml.getConfig().getTmlMode()) {
-            case API_LIVE:
-                cacheVersion.setVersion("live");
-                cacheVersion.markAsUpdated();
-                Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
-                break;
-            case CDN:
-                Tml.getLogger().debug("load version from the server...");
-                cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.buildMap("uncompressed", true)));
-                break;
+        if (cacheVersion == null) {
+            // load version from local cache
+            Tml.getLogger().debug("load version from local cache...");
+            cacheVersion = new TmlCacheVersion();
+            cacheVersion.fetchFromCache();
         }
-        Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
+
+//        // load version from server
+//        if (cacheVersion.isExpired() || cacheVersion.isUnreleased()) {
+//            Tml.getLogger().debug("load version from the server...");
+//            cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.buildMap("uncompressed", true)));
+//        }
+//        Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
         return cacheVersion;
     }
 }

@@ -40,7 +40,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -67,16 +66,14 @@ public class AuthorizationActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        setupActionBar(true);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         WebView webView = (WebView) findViewById(R.id.web_view);
         webView.addJavascriptInterface(new WebAppInterface(this), "tmlMessageHandler");
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
 
         webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//                return true;
-//            }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -110,7 +107,7 @@ public class AuthorizationActivity extends BaseActivity {
     public static class WebAppInterface {
         private Activity activity;
 
-        public WebAppInterface(Activity activity) {
+        WebAppInterface(Activity activity) {
             this.activity = activity;
         }
 

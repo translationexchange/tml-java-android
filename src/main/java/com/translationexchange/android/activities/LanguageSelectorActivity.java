@@ -66,7 +66,7 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_language);
-
+        setupActionBar(true);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .defaultDisplayImageOptions(new DisplayImageOptions.Builder()
                         .cacheInMemory(true)

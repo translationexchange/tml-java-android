@@ -51,6 +51,7 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_option_auth);
+        setupActionBar(true);
         (btnTranslation = (TextView) findViewById(R.id.btn_translation)).setOnClickListener(this);
         (btnChangeLanguage = findViewById(R.id.btn_change_language)).setOnClickListener(this);
         (btnAuth = (TextView) findViewById(R.id.btn_auth)).setOnClickListener(this);
@@ -60,7 +61,7 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        auth = Auth.getAuth();
+        auth = TmlAndroid.getAuth();
         isAuthValid = auth != null && !auth.isExpired();
         if (isAuthValid) {
             btnAuth.setText(TmlAndroid.translate("Sign Out"));
@@ -88,15 +89,14 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
             if (isAuthValid) {
                 auth.toggleInlineMode();
                 auth.save();
-                TmlAndroid.getAndroidApplication().getAuth().setInlineMode(auth.isInlineMode());
                 updateInlineMode();
+                TmlAndroid.reInit(getApplicationContext());
             }
         } else if (id == btnChangeLanguage.getId()) {
             LanguageSelectorActivity.open(this);
         } else if (id == btnAuth.getId()) {
             if (isAuthValid) {
-                Auth.clear();
-                TmlAndroid.getAndroidApplication().clearAccessCode(false);
+                TmlAndroid.setAuth(null);
                 AuthorizationActivity.logout(this);
             } else {
                 AuthorizationActivity.auth(this);

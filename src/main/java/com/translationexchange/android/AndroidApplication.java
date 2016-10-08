@@ -3,11 +3,18 @@ package com.translationexchange.android;
 import android.content.Context;
 
 import com.translationexchange.android.activities.AuthorizationActivity;
-import com.translationexchange.android.model.Auth;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Source;
+import com.translationexchange.core.Tml;
+import com.translationexchange.core.TranslationKey;
+import com.translationexchange.core.Utils;
+import com.translationexchange.core.cache.CacheVersion;
+import com.translationexchange.core.languages.Language;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +23,6 @@ import java.util.Map;
 public class AndroidApplication extends Application {
 
     private AndroidHttpClient httpClient;
-    private Auth auth;
 
     /**
      * Default constructor
@@ -34,11 +40,6 @@ public class AndroidApplication extends Application {
         super(attributes);
     }
 
-    @Override
-    public Source getSource(String key, String locale, Map<String, Object> options) {
-        return super.getSource(key, locale, options);
-    }
-
     /**
      * <p>Getter for the field <code>accessToken</code>.</p>
      *
@@ -47,21 +48,18 @@ public class AndroidApplication extends Application {
     @Override
     public String getAccessToken() {
         if (super.getAccessToken() == null) {
-            getAuth();
-            if (auth != null) {
-                super.setAccessToken(auth.getAccessToken());
+            if (TmlAndroid.getAuth() != null) {
+                super.setAccessToken(TmlAndroid.getAuth().getAccessToken());
             }
         }
-        if (auth != null && auth.isExpired()) {
+        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isExpired()) {
             clearAccessCode(true);
         }
         return super.getAccessToken();
     }
 
-    public void clearAccessCode(boolean openAuth) {
-        auth = null;
+    void clearAccessCode(boolean openAuth) {
         super.setAccessToken(null);
-        Auth.clear();
         if (!TmlAndroid.getObjects().isEmpty() && openAuth) {
             Object o = TmlAndroid.getObjects().get(0);
             if (o instanceof Context) {
@@ -71,22 +69,109 @@ public class AndroidApplication extends Application {
         }
     }
 
-    public Auth getAuth() {
-        if (auth == null) {
-            auth = Auth.getAuth();
-        }
-        return auth;
-    }
-
-    public void setAuth(Auth auth) {
-        this.auth = auth;
-    }
-
     @Override
     public HttpClient getHttpClient() {
         if (httpClient == null) {
             httpClient = new AndroidHttpClient(this);
         }
         return httpClient;
+    }
+
+    /**
+     * Submits missing translations keys to the server
+     */
+    public synchronized void submitMissingTranslationKeys() {
+        if (getMissingTranslationKeysBySources().size() == 0 || TmlAndroid.getAuth() == null || !TmlAndroid.getAuth().isInlineMode())
+            return;
+//        if (!isKeyRegistrationEnabled() || getMissingTranslationKeysBySources().size() == 0)
+//            return;
+
+        Tml.getLogger().debug("Submitting missing translation keys...");
+
+        List<Map<String, Object>> params = new ArrayList<Map<String, Object>>();
+
+        List<String> sourceKeys = new ArrayList<String>();
+
+        Iterator<Map.Entry<String, Map<String, TranslationKey>>> entries = missingTranslationKeysBySources.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, Map<String, TranslationKey>> entry = entries.next();
+            String source = entry.getKey();
+
+            if (!sourceKeys.contains(source))
+                sourceKeys.add(source);
+
+            Map<String, TranslationKey> translationKeys = entry.getValue();
+            List<Object> keys = new ArrayList<Object>();
+
+            for (Object object : translationKeys.values()) {
+                TranslationKey translationKey = (TranslationKey) object;
+                keys.add(translationKey.toMap());
+            }
+
+            params.add(Utils.buildMap("source", source, "keys", keys));
+        }
+
+        registerKeys(Utils.buildMap("source_keys", Utils.buildJSON(params), "app_id", getKey()));
+
+        this.missingTranslationKeysBySources.clear();
+    }
+
+    public void loadLocal(String cacheVersion) {
+        try {
+            Map<String, Object> data = getHttpClient().getJSONMap(Utils.buildMap("cache_key", "application", CacheVersion.VERSION_KEY, cacheVersion));
+            if (data == null || data.isEmpty()) {
+                setDefaultLocale(Tml.getConfig().getDefaultLocale());
+                addLanguage(Tml.getConfig().getDefaultLanguage());
+                Tml.getLogger().debug("No release has been published or no cache has been provided");
+                setLoaded(false);
+            } else {
+                updateAttributes(data);
+                setLoaded(true);
+            }
+        } catch (Exception ex) {
+            setLoaded(false);
+            addLanguage(Tml.getConfig().getDefaultLanguage());
+            Tml.getLogger().logException("Failed to load application", ex);
+        }
+    }
+
+    /**
+     * <p>getLanguage.</p>
+     *
+     * @param locale a {@link java.lang.String} object.
+     * @return a {@link com.translationexchange.core.languages.Language} object.
+     */
+    public Language getLanguageLocal(String locale, String cacheVersion) {
+        if (getLanguagesByLocale().get(locale) == null) {
+            getLanguagesByLocale().put(locale, new Language(Utils.buildMap("application", this, "locale", locale)));
+        }
+
+        Language language = getLanguagesByLocale().get(locale);
+        if (!language.hasDefinition()) {
+            language.loadLocal(cacheVersion);
+        }
+        return language;
+    }
+
+    /**
+     * Get source with translations for a specific locale
+     *
+     * @param key     a {@link java.lang.String} object.
+     * @param locale  a {@link java.lang.String} object.
+     * @param options a {@link java.util.Map} object.
+     * @return a {@link com.translationexchange.core.Source} object.
+     */
+    public Source getSource(String key, String locale, Map<String, Object> options) {
+        if (getSourcesByKeys().get(key) == null) {
+            TmlSource source = new TmlSource(Utils.buildMap("application", this, "key", key, "locale", locale));
+            if (options == null) {
+                source.load(null);
+            } else {
+                source.loadLocal((String) options.get(CacheVersion.VERSION_KEY));
+            }
+            getSourcesByKeys().put(key, source);
+        }
+
+        return getSourcesByKeys().get(key);
     }
 }

@@ -102,37 +102,33 @@ public class AndroidHttpClient extends HttpClient {
 
         CacheVersion cacheVersion = Tml.getCache().verifyCacheVersion(getApplication());
 
-        if (cacheVersion.isExpired()) {
-            // load version from server
-            switch (Tml.getConfig().getTmlMode()) {
-                case API_LIVE:
-                    cacheVersion.setVersion("live");
-                    cacheVersion.markAsUpdated();
-                    Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
-                    break;
-                case CDN:
-                    Tml.getLogger().debug("load version from the server...");
-                    cacheVersion.updateFromCDN(getFromCDN("version", Utils.buildMap("uncompressed", true)));
-                    break;
+        // load version from server
+        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode() && !cacheVersion.getVersion().equals("live")) {
+            cacheVersion.setVersion("live");
+            cacheVersion.markAsUpdated();
+//            Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
+        } else {
+            if (cacheVersion.isExpired()) {
+                Tml.getLogger().debug("load version from the server...");
+                cacheVersion.updateFromCDN(getFromCDN("version", Utils.buildMap("uncompressed", true)));
             }
-            Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
         }
+
+        Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
 
         // put the current version into options
         options.put(CacheVersion.VERSION_KEY, cacheVersion.getVersion());
 
         responseText = (String) Tml.getCache().fetch(cacheKey, options);
+
         if (responseText != null)
             return processJSONResponse(responseText, options);
 
         // if no data in the local cache
-        switch (Tml.getConfig().getTmlMode()) {
-            case API_LIVE:
-                responseText = get(path, params, options);
-                break;
-            case CDN:
-                responseText = getFromCDN(cacheKey, options);
-                break;
+        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode()) {
+            responseText = get(path, params, options);
+        } else {
+            responseText = getFromCDN(cacheKey, options);
         }
 
         if (responseText == null)
@@ -150,6 +146,7 @@ public class AndroidHttpClient extends HttpClient {
         }
 
         Tml.getCache().store(cacheKey, responseText, options);
+
         return result;
     }
 

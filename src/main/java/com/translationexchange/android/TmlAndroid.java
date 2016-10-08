@@ -36,52 +36,117 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.translationexchange.android.activities.TmlAndroidActivity;
 import com.translationexchange.android.cache.FileCache;
+import com.translationexchange.android.cache.TmlCacheVersion;
+import com.translationexchange.android.logger.Logger;
+import com.translationexchange.android.model.Auth;
 import com.translationexchange.android.service.TmlService;
+import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
+import com.translationexchange.android.utils.Decompress;
+import com.translationexchange.android.utils.FileUtils;
+import com.translationexchange.android.utils.PreferenceUtil;
 import com.translationexchange.android.utils.ViewUtils;
 import com.translationexchange.core.Tml;
-import com.translationexchange.core.TmlMode;
+import com.translationexchange.core.TranslationKey;
+import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.Cache;
+import com.translationexchange.core.cache.CacheVersion;
+import com.translationexchange.core.languages.Language;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class TmlAndroid extends com.translationexchange.core.Tml {
 
     private static List<Object> objects;
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
+    private static Auth auth;
+    private static TmlSession session = null;
 
     /**
      * <p>Initializes the SDK</p>
      */
-    public static void init(Activity activity, TmlMode tmlMode, String zip) {
+    public static void init(Context context, String zipVersion) {
+        startRecognizeTouch(context);
         if (getSession() == null) {
-            TmlService.startInit(activity, tmlMode, zip);
-            startScheduledTasks();
+            TmlAndroid.getConfig().setLogger(Utils.buildMap(
+                    "class", Logger.class.getName()
+            ));
+
+            TmlAndroid.getConfig().setCache(Utils.buildMap(
+                    "enabled", true,
+                    "class", FileCache.class.getName(),
+                    "cache_dir", FileUtils.getBaseDirectory(context)
+            ));
+
+            TmlAndroid.getConfig().setApplicationClass(AndroidApplication.class.getName());
+            TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
+
+            if (!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
+                Cache cache = TmlAndroid.getCache();
+                if (cache != null && cache instanceof FileCache) {
+                    FileCache fileCache = ((FileCache) cache);
+                    Decompress.unzipFromRes(context, zipVersion, fileCache.getCachePath());
+                }
+            }
+            CacheVersion cacheVersion = null;
+            if ((cacheVersion = TmlAndroid.hasCachedVersion()) != null) {
+                Map<String, Object> options = Tml.getConfig().getApplication();
+                options.put(CacheVersion.VERSION_KEY, cacheVersion.getVersion());
+                TmlAndroid.setSession(new TmlSession(options));
+
+                Locale locale = PreferenceUtil.getCurrentLocation(context);
+                if (TmlAndroid.getAndroidApplication().isSupportedLocale(locale.getLanguage())) {
+                    Language language = TmlAndroid.getAndroidApplication().getLanguageLocal(locale.getLanguage(), cacheVersion.getVersion());
+                    if (language != null && language.isLoaded()) {
+                        TmlAndroid.switchLanguageLocal(language, options);
+                    }
+                }
+            }
+
+            TmlService.startSync(context);
+//            startScheduledTasks();
         }
-        startRecognizeTouch(activity);
     }
 
-    public static void destroy(Activity activity) {
-        stopScheduledTasks();
-        TmlAndroid.removeObject(activity);
+    private static void stop() {
+        Map<String, Object> application = getConfig().getApplication();
+        setApplication(null);
         setSession(null);
+        setCache(null);
+        setConfig(null);
+
+        getConfig().setApplication(application);
+    }
+
+    public static void reInit(Context context) {
+        stop();
+        init(context, "");
+    }
+
+    public static void destroy(Context context) {
+        stopScheduledTasks();
+        stop();
         if (activityLifecycleCallbacks != null) {
-            activity.getApplication().unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+            ((Application) context.getApplicationContext()).unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
             activityLifecycleCallbacks = null;
         }
     }
 
-    private static void startRecognizeTouch(Context activity) {
+    private static void startRecognizeTouch(Context context) {
         if (activityLifecycleCallbacks == null) {
-            ((Application) activity.getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
+            ((Application) context.getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
                 @Override
                 public void onActivityCreated(Activity activity, Bundle bundle) {
                     Tml.getLogger().error("onActivityCreated", activity.getClass().getSimpleName());
@@ -90,7 +155,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                 @Override
                 public void onActivityStarted(Activity activity) {
                     Tml.getLogger().error("onActivityStarted", activity.getClass().getSimpleName());
-                    View view = activity.getWindow().getDecorView();//activity.findViewById(android.R.id.content);
+                    TmlAndroid.addObject(activity);
+                    View view = activity.getWindow().getDecorView();
                     if (view != null) {
                         ViewUtils.findViews(view);
                         view.setOnTouchListener(new View.OnTouchListener() {
@@ -109,26 +175,23 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
 
                 @Override
                 public void onActivityResumed(Activity activity) {
-                    Tml.getLogger().error("onActivityResumed", activity.getClass().getSimpleName());
                 }
 
                 @Override
                 public void onActivityPaused(Activity activity) {
-
                 }
 
                 @Override
                 public void onActivityStopped(Activity activity) {
-
                 }
 
                 @Override
                 public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
-
                 }
 
                 @Override
                 public void onActivityDestroyed(Activity activity) {
+                    TmlAndroid.removeObject(activity);
 
                 }
             });
@@ -194,79 +257,100 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     /**
      * Translates the SpannableString
      *
-     * @param label
+     * @param label a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label) {
-        return translateSpannableString(label, "");
+        return getSession() == null ? new SpannableString(label) : translateSpannableString(label, "");
     }
 
     /**
      * Translates the SpannableString
      *
-     * @param label
-     * @param description
+     * @param label       a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label, String description) {
-        return translateSpannableString(label, description, null);
+        return getSession() == null ? new SpannableString(label) : translateSpannableString(label, description, null);
     }
 
     /**
      * Translates the SpannableString
      *
-     * @param label
-     * @param description
-     * @param tokens
+     * @param label       a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param tokens      a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label, String description, Map<String, Object> tokens) {
-        return translateSpannableString(label, description, tokens, null);
+        return getSession() == null ? new SpannableString(label) : translateSpannableString(label, description, tokens, null);
     }
 
     /**
      * Translates the SpannableString
      *
-     * @param label
-     * @param tokens
+     * @param label  a {@link java.lang.String} object.
+     * @param tokens a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label, Map<String, Object> tokens) {
-        return translateSpannableString(label, null, tokens, null);
+        return getSession() == null ? new SpannableString(label) : translateSpannableString(label, null, tokens, null);
     }
 
     /**
      * Translates the SpannableString
      *
-     * @param label
-     * @param tokens
-     * @param options
+     * @param label   a {@link java.lang.String} object.
+     * @param tokens  a {@link java.lang.String} object.
+     * @param options a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label, Map<String, Object> tokens, Map<String, Object> options) {
-        return translateSpannableString(label, null, tokens, options);
+        return getSession() == null ? new SpannableString(label) : translateSpannableString(label, null, tokens, options);
     }
 
     /**
      * Translates the SpannableString
      *
-     * @param label
-     * @param description
-     * @param tokens
-     * @param options
+     * @param label       a {@link java.lang.String} object.
+     * @param description a {@link java.lang.String} object.
+     * @param tokens      a {@link java.lang.String} object.
+     * @param options     a {@link java.lang.String} object.
      * @return
      */
     public static Spannable translateSpannableString(String label, String description, Map<String, Object> tokens, Map<String, Object> options) {
-        return (Spannable) com.translationexchange.core.Tml.getSession().translateStyledString(label, tokens, options);
+        if (getSession() == null) {
+            return new SpannableString(label);
+        } else {
+            Object o = getSession().translateStyledString(label, tokens, options);
+            if (o instanceof Spannable) {
+                return (Spannable) o;
+            } else {
+                return new SpannableString(Html.fromHtml(o.toString()));
+            }
+        }
+
     }
 
-    public static boolean hasCachedVersion(String version) {
+    private static boolean hasZipVersion(String version) {
         Cache cache = TmlAndroid.getCache();
         if (cache != null && cache instanceof FileCache) {
             FileCache fileCache = ((FileCache) cache);
             return new File(fileCache.getCachePath(), version).exists();
         }
         return false;
+    }
+
+    private static CacheVersion hasCachedVersion() {
+        Cache cache = TmlAndroid.getCache();
+        if (cache != null) {
+            CacheVersion cacheVersion = new TmlCacheVersion();
+            if (cacheVersion.fetchFromCache()) {
+                return cacheVersion;
+            }
+        }
+        return null;
     }
 
     public static List<Object> getObjects() {
@@ -276,19 +360,81 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         return objects;
     }
 
-    public static void addObject(Object c) {
+    private static void addObject(Object c) {
         if (!getObjects().contains(c)) {
             getObjects().add(c);
         }
     }
 
-    public static void removeObject(Object c) {
+    private static void removeObject(Object c) {
         if (getObjects().contains(c)) {
             getObjects().remove(c);
         }
     }
 
     public static AndroidApplication getAndroidApplication() {
-        return (AndroidApplication) getApplication();
+        return getSession() == null ? null : getSession().getApplication();
+    }
+
+    public static Auth getAuth() {
+        if (auth == null) {
+            auth = Auth.getAuth();
+        }
+        return auth;
+    }
+
+    public static void setAuth(Auth auth) {
+        TmlAndroid.auth = auth;
+        if (auth == null) {
+            TmlAndroid.getCache().delete("auth", Utils.buildMap());
+            TmlAndroid.getAndroidApplication().clearAccessCode(false);
+        } else {
+            TmlAndroid.getAndroidApplication().setAccessToken(auth.getAccessToken());
+        }
+    }
+
+    public static TmlSession getSession() {
+        return session;
+    }
+
+    public static void setSession(TmlSession session) {
+        TmlAndroid.session = session;
+    }
+
+    private static void switchLanguageLocal(Language language, Map<String, Object> options) {
+        getSession().switchLanguageLocal(language, options);
+    }
+
+    public static void switchLanguage(Language language) {
+        getSession().switchLanguage(language);
+    }
+
+    /**
+     * <p>initSource.</p>
+     *
+     * @param key    a {@link java.lang.String} object.
+     * @param locale a {@link java.lang.String} object.
+     */
+    public static void initSource(String key, String locale, Map<String, Object> options) {
+        getAndroidApplication().getSource(key, locale, options);
+    }
+
+    /**
+     * <p>initSource.</p>
+     *
+     * @param key    a {@link java.lang.String} object.
+     * @param locale a {@link java.lang.String} object.
+     */
+    public static void initSource(String key, String locale) {
+        getAndroidApplication().getSource(key, locale, null);
+    }
+
+    /**
+     * <p>setApplication.</p>
+     *
+     * @param application a {@link com.translationexchange.core.Application} object.
+     */
+    public static void setApplication(com.translationexchange.core.Application application) {
+        getSession().setApplication(application);
     }
 }

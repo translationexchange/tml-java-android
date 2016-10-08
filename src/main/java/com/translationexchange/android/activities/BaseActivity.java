@@ -1,9 +1,12 @@
 package com.translationexchange.android.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import com.translationexchange.android.text.TmlContextWrapper;
 
 /**
  * Created by ababenko on 9/8/16.
@@ -11,12 +14,6 @@ import android.view.MenuItem;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
-
-    @Override
-    public void setContentView(int layoutResID) {
-        super.setContentView(layoutResID);
-        setupActionBar(true);
-    }
 
     public void setupActionBar(boolean isHomeButtonEnabled) {
         ActionBar actionBar = getSupportActionBar();
@@ -36,5 +33,10 @@ public class BaseActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void attachBaseContext(Context newBase) {
+        super.attachBaseContext(TmlContextWrapper.wrap(newBase));
     }
 }

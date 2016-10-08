@@ -42,7 +42,7 @@ public class Decompress {
                 org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
                 jsonObject.put("t", calendar.getTimeInMillis());
                 jsonObject.put("version", version);
-                jsonObject.put("expired_in", calendar.getTimeInMillis() + CacheVersion.getVerificationInterval());
+//                jsonObject.put("expired_in", calendar.getTimeInMillis() + CacheVersion.getVerificationInterval());
                 FileUtils.writeToFile(versionFile, jsonObject.toString());
                 InputStream inputStream = context.getResources().openRawResource(resId);
                 unzip(inputStream, new File(destination, version).getPath());
