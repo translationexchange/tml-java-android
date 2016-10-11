@@ -19,17 +19,14 @@
 
     <TextView
         android:id="@+id/btn_change_language"
-        style="@style/label_option"
-        android:text="Change language" />
+        style="@style/label_option" />
 
     <TextView
         android:id="@+id/btn_translation"
-        style="@style/label_option"
-        android:text="Activate Translation" />
+        style="@style/label_option" />
 
     <TextView
         android:id="@+id/btn_auth"
-        style="@style/label_option"
-        android:text="Sign In" />
+        style="@style/label_option" />
 
 </LinearLayout>

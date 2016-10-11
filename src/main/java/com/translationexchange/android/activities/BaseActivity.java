@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.text.TmlContextWrapper;
 
 /**
@@ -13,9 +14,12 @@ import com.translationexchange.android.text.TmlContextWrapper;
  */
 
 @SuppressLint("Registered")
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    public void setupActionBar(boolean isHomeButtonEnabled) {
+    @TmlAnnotation
+    public abstract void initUi();
+
+    public void enableBackButton(boolean isHomeButtonEnabled) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(true);

@@ -42,6 +42,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import com.translationexchange.android.activities.TmlAndroidActivity;
 import com.translationexchange.android.cache.FileCache;
@@ -53,7 +54,6 @@ import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
 import com.translationexchange.android.utils.Decompress;
 import com.translationexchange.android.utils.FileUtils;
 import com.translationexchange.android.utils.PreferenceUtil;
-import com.translationexchange.android.utils.ViewUtils;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.Utils;
@@ -80,18 +80,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     public static void init(Context context, String zipVersion) {
         startRecognizeTouch(context);
         if (getSession() == null) {
-            TmlAndroid.getConfig().setLogger(Utils.buildMap(
-                    "class", Logger.class.getName()
-            ));
-
-            TmlAndroid.getConfig().setCache(Utils.buildMap(
-                    "enabled", true,
-                    "class", FileCache.class.getName(),
-                    "cache_dir", FileUtils.getBaseDirectory(context)
-            ));
-
-            TmlAndroid.getConfig().setApplicationClass(AndroidApplication.class.getName());
-            TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
+            initConfig(context);
 
             if (!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
                 Cache cache = TmlAndroid.getCache();
@@ -120,6 +109,21 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         }
     }
 
+    private static void initConfig(Context context) {
+        TmlAndroid.getConfig().setLogger(Utils.buildMap(
+                "class", Logger.class.getName()
+        ));
+
+        TmlAndroid.getConfig().setCache(Utils.buildMap(
+                "enabled", true,
+                "class", FileCache.class.getName(),
+                "cache_dir", FileUtils.getBaseDirectory(context)
+        ));
+
+        TmlAndroid.getConfig().setApplicationClass(AndroidApplication.class.getName());
+        TmlAndroid.getConfig().addTokenizerClass(TranslationKey.DEFAULT_TOKENIZERS_STYLED, SpannableStringTokenizer.class.getName());
+    }
+
     private static void stop() {
         Map<String, Object> application = getConfig().getApplication();
         setApplication(null);
@@ -132,7 +136,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
 
     public static void reInit(Context context) {
         stop();
-        init(context, "");
+        initConfig(context);
+        TmlService.startSync(context);
     }
 
     public static void destroy(Context context) {
@@ -158,7 +163,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                     TmlAndroid.addObject(activity);
                     View view = activity.getWindow().getDecorView();
                     if (view != null) {
-                        ViewUtils.findViews(view);
+//                        ViewUtils.findViews(view);
                         view.setOnTouchListener(new View.OnTouchListener() {
 
                             @Override
@@ -205,7 +210,14 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return translated label
      */
     public static String translate(String label) {
-        return getSession() == null ? label : getSession().translate(label);
+        return translate(label, "");
+    }
+
+    public static void translate(View textLabel, String label) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translate(label));
+        }
     }
 
     /**
@@ -216,7 +228,14 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, String description) {
-        return getSession() == null ? label : getSession().translate(label, description);
+        return translate(label, description, null);
+    }
+
+    public static void translate(View textLabel, String label, String description) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+            ((TextView) textLabel).setText(translate(label, description));
+        }
     }
 
     /**
@@ -228,7 +247,14 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      * @return a {@link java.lang.String} object.
      */
     public static String translate(String label, String description, Map<String, Object> tokens) {
-        return getSession() == null ? label : getSession().translate(label, description, tokens);
+        return getSession() == null ? label : getSession().translate(label, description, tokens, null);
+    }
+
+    public static void translate(View textLabel, String label, String description, Map<String, Object> tokens) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+            ((TextView) textLabel).setText(translate(label, description, tokens));
+        }
     }
 
     /**
@@ -240,6 +266,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static String translate(String label, Map<String, Object> tokens) {
         return getSession() == null ? label : getSession().translate(label, tokens);
+    }
+
+    public static void translate(View textLabel, String label, Map<String, Object> tokens) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translate(label, tokens));
+        }
     }
 
     /**
@@ -254,6 +287,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         return getSession() == null ? label : getSession().translate(label, tokens, options);
     }
 
+    public static void translate(View textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translate(label, tokens, options));
+        }
+    }
+
     /**
      * Translates the SpannableString
      *
@@ -262,6 +302,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static Spannable translateSpannableString(String label) {
         return getSession() == null ? new SpannableString(label) : translateSpannableString(label, "");
+    }
+
+    public static void translateSpannableString(View textLabel, String label) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translateSpannableString(label));
+        }
     }
 
     /**
@@ -273,6 +320,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static Spannable translateSpannableString(String label, String description) {
         return getSession() == null ? new SpannableString(label) : translateSpannableString(label, description, null);
+    }
+
+    public static void translateSpannableString(View textLabel, String label, String description) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+            ((TextView) textLabel).setText(translateSpannableString(label, description));
+        }
     }
 
     /**
@@ -287,6 +341,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : translateSpannableString(label, description, tokens, null);
     }
 
+    public static void translateSpannableString(View textLabel, String label, String description, Map<String, Object> tokens) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+            ((TextView) textLabel).setText(translateSpannableString(label, description, tokens));
+        }
+    }
+
     /**
      * Translates the SpannableString
      *
@@ -296,6 +357,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static Spannable translateSpannableString(String label, Map<String, Object> tokens) {
         return getSession() == null ? new SpannableString(label) : translateSpannableString(label, null, tokens, null);
+    }
+
+    public static void translateSpannableString(View textLabel, String label, Map<String, Object> tokens) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translateSpannableString(label, tokens));
+        }
     }
 
     /**
@@ -308,6 +376,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static Spannable translateSpannableString(String label, Map<String, Object> tokens, Map<String, Object> options) {
         return getSession() == null ? new SpannableString(label) : translateSpannableString(label, null, tokens, options);
+    }
+
+    public static void translateSpannableString(View textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+            ((TextView) textLabel).setText(translateSpannableString(label, tokens, options));
+        }
     }
 
     /**
@@ -331,6 +406,13 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
             }
         }
 
+    }
+
+    public static void translateSpannableString(View textLabel, String label, String description, Map<String, Object> tokens, Map<String, Object> options) {
+        if (textLabel instanceof TextView) {
+            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+            ((TextView) textLabel).setText(translateSpannableString(label, description, tokens, options));
+        }
     }
 
     private static boolean hasZipVersion(String version) {

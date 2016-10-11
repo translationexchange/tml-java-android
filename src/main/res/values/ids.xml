@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="calligraphy_tag_id" type="id"/>
+    <item name="tml_tag_id" type="id" />
+    <item name="tml_key_hash_id" type="id" />
 </resources>

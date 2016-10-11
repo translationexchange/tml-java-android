@@ -37,11 +37,12 @@ import android.widget.TextView;
 
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.model.Auth;
 
 public class TmlAndroidActivity extends BaseActivity implements View.OnClickListener {
     private TextView btnTranslation;
-    private View btnChangeLanguage;
+    private TextView btnChangeLanguage;
     private TextView btnAuth;
     private TextView userName;
     private boolean isAuthValid;
@@ -51,18 +52,16 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_option_auth);
-        setupActionBar(true);
+        enableBackButton(true);
         (btnTranslation = (TextView) findViewById(R.id.btn_translation)).setOnClickListener(this);
-        (btnChangeLanguage = findViewById(R.id.btn_change_language)).setOnClickListener(this);
+        (btnChangeLanguage = (TextView) findViewById(R.id.btn_change_language)).setOnClickListener(this);
         (btnAuth = (TextView) findViewById(R.id.btn_auth)).setOnClickListener(this);
         userName = (TextView) findViewById(R.id.user_name);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        auth = TmlAndroid.getAuth();
-        isAuthValid = auth != null && !auth.isExpired();
+    @TmlAnnotation
+    public void initUi() {
+        btnChangeLanguage.setText(TmlAndroid.translate("Change language"));
         if (isAuthValid) {
             btnAuth.setText(TmlAndroid.translate("Sign Out"));
             userName.setVisibility(View.VISIBLE);
@@ -72,6 +71,14 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
             userName.setVisibility(View.GONE);
         }
         updateInlineMode();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        auth = TmlAndroid.getAuth();
+        isAuthValid = auth != null && !auth.isExpired();
+        initUi();
     }
 
     private void updateInlineMode() {

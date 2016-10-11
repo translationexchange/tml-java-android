@@ -73,6 +73,7 @@ public class TmlSession extends Session {
         setCurrentLanguage(language);
 
         getApplication().resetTranslations();
+        getApplication().loadTranslationsLocal(language, (String) options.get(CacheVersion.VERSION_KEY));
 
         TmlAndroid.initSource("index", language.getLocale(), options);
 
@@ -93,6 +94,7 @@ public class TmlSession extends Session {
         setCurrentLanguage(language);
 
         getApplication().resetTranslations();
+        getApplication().loadTranslations(language);
 
         TmlAndroid.initSource("index", language.getLocale());
 

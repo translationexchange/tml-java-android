@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.TmlSession;
@@ -95,7 +96,7 @@ public class TmlService extends IntentService {
         }
     }
 
-    private static void update() {
+    public static void update() {
         for (final Object o : TmlAndroid.getObjects()) {
             Method[] m = o.getClass().getDeclaredMethods();
             for (final Method method : m) {
@@ -105,9 +106,11 @@ public class TmlService extends IntentService {
                             @Override
                             public void run() {
                                 try {
+                                    method.setAccessible(true);
                                     method.invoke(o);
                                 } catch (Exception e) {
 //                                    e.printStackTrace();
+                                    Log.e("TmlAnnotation", e.getMessage());
                                 }
                             }
                         });

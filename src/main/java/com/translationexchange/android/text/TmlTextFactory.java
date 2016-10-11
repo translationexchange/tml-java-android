@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.logger.Logger;
+import com.translationexchange.core.TranslationKey;
 
 import java.lang.ref.WeakReference;
 
@@ -32,9 +33,9 @@ class TmlTextFactory {
      */
 
     View onViewCreated(View view, Context context, AttributeSet attrs) {
-        if (view != null && view.getTag(R.id.calligraphy_tag_id) != Boolean.TRUE) {
+        if (view != null && view.getTag(R.id.tml_tag_id) != Boolean.TRUE) {
             onViewCreatedInternal(view, context, attrs);
-            view.setTag(R.id.calligraphy_tag_id, Boolean.TRUE);
+            view.setTag(R.id.tml_tag_id, Boolean.TRUE);
         }
         return view;
     }
@@ -55,10 +56,18 @@ class TmlTextFactory {
 
             if (!TextUtils.isEmpty(text)) {
                 logger.debug("onTextChanged init", text);
+
+                Object o = textView.getTag(R.id.tml_key_hash_id);
+                if (o == null) {
+                    textView.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(text));
+                }
+
                 textView.setText(TmlAndroid.translate(text));
             }
 
             textView.addTextChangedListener(new TmlTextWatcher(textView, logger));
+
+            textView.setOnLongClickListener(new TmlLongClickListener());
         }
 
         // AppCompat API21+ The ActionBar doesn't inflate default Title/SubTitle, we need to scan the

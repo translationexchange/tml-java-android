@@ -37,6 +37,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -44,8 +46,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.model.MTC;
+import com.translationexchange.android.service.TmlService;
+import com.translationexchange.core.TranslationKey;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class MobileTranslationCenterActivity extends BaseActivity {
@@ -61,7 +67,7 @@ public class MobileTranslationCenterActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        setupActionBar(true);
+        enableBackButton(true);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         WebView webView = (WebView) findViewById(R.id.web_view);
         webView.addJavascriptInterface(new WebAppInterface(this), "tmlMessageHandler");
@@ -99,17 +105,38 @@ public class MobileTranslationCenterActivity extends BaseActivity {
         webView.loadUrl(url);
     }
 
+    @Override
+    public void initUi() {
+
+    }
+
     public static class WebAppInterface {
         private Activity activity;
 
-        public WebAppInterface(Activity activity) {
+        WebAppInterface(Activity activity) {
             this.activity = activity;
         }
 
         @JavascriptInterface
-        public void postMessage(String message) {
+        public void postMessage(String text) {
+            byte[] dataDecoded = Base64.decode(text, Base64.DEFAULT);
+            String message = new String(dataDecoded);
+            Gson gson = new Gson();
             TmlAndroid.getLogger().info("web_postMessage", message);
-//            activity.finish();
+            MTC mtc = gson.fromJson(message, MTC.class);
+            if (mtc != null && !TextUtils.isEmpty(mtc.getAction())) {
+                if (mtc.getAction().equals("update")) {
+                    if (TmlAndroid.getAndroidApplication() != null) {
+                        TranslationKey translationKey = TmlAndroid.getAndroidApplication().getTranslationKey(mtc.getTranslationKey());
+                        translationKey.setLabel(mtc.getTranslation());
+                        TmlService.update();
+                    }
+                } else if (mtc.getAction().equals("next")) {
+                    activity.finish();
+                }
+            } else {
+                activity.finish();
+            }
         }
     }
 

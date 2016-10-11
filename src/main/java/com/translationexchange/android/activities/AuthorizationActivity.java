@@ -66,7 +66,7 @@ public class AuthorizationActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        setupActionBar(true);
+        enableBackButton(true);
         progressBar = (ProgressBar) findViewById(R.id.progress);
         WebView webView = (WebView) findViewById(R.id.web_view);
         webView.addJavascriptInterface(new WebAppInterface(this), "tmlMessageHandler");
@@ -102,6 +102,11 @@ public class AuthorizationActivity extends BaseActivity {
         String url = getIntent().getStringExtra("url");
         TmlAndroid.getLogger().info("web_auth_url", url);
         webView.loadUrl(url);
+    }
+
+    @Override
+    public void initUi() {
+
     }
 
     public static class WebAppInterface {
