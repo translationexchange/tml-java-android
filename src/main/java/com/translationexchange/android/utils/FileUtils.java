@@ -1,7 +1,11 @@
 package com.translationexchange.android.utils;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 
 import com.translationexchange.android.TmlAndroid;
 
@@ -72,7 +76,8 @@ public class FileUtils {
     }
 
     public static File getBaseDirectory(Context context) {
-        File file = new File(isExternalStorageAvailableAndWriteable() ? (Environment.getExternalStorageDirectory() + File.separator + "TML") : (context.getFilesDir() + File.separator + "TML"));
+        File file = new File(context.getFilesDir(), "TML");
+//        File file = new File(isExternalStorageAvailableAndWriteable() ? (Environment.getExternalStorageDirectory() + File.separator + "TML") : (context.getFilesDir() + File.separator + "TML"));
         if (!file.exists()) {
             TmlAndroid.getLogger().error("FileUtils", "Creating base directory - " + file.mkdir());
         }
@@ -102,5 +107,9 @@ public class FileUtils {
         BufferedWriter buf = new BufferedWriter(new FileWriter(file));
         buf.append(text);
         buf.close();
+    }
+
+    public static boolean canWriteToFile(Context context) {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M || ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 }

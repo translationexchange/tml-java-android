@@ -106,7 +106,6 @@ public class AndroidHttpClient extends HttpClient {
         if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode() && !cacheVersion.getVersion().equals("live")) {
             cacheVersion.setVersion("live");
             cacheVersion.markAsUpdated();
-//            Tml.getCache().store(cacheVersion.getVersionKey(), cacheVersion.toJSON(), Utils.buildMap());
         } else {
             if (cacheVersion.isExpired()) {
                 Tml.getLogger().debug("load version from the server...");
@@ -146,7 +145,6 @@ public class AndroidHttpClient extends HttpClient {
         }
 
         Tml.getCache().store(cacheKey, responseText, options);
-
         return result;
     }
 

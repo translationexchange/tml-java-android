@@ -14,10 +14,11 @@ import com.translationexchange.android.text.TmlContextWrapper;
  */
 
 @SuppressLint("Registered")
-public abstract class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     @TmlAnnotation
-    public abstract void initUi();
+    public void initUi(){
+    };
 
     public void enableBackButton(boolean isHomeButtonEnabled) {
         ActionBar actionBar = getSupportActionBar();

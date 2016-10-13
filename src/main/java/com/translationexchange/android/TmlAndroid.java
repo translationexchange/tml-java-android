@@ -34,17 +34,14 @@ package com.translationexchange.android;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.translationexchange.android.activities.TmlAndroidActivity;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.cache.TmlCacheVersion;
 import com.translationexchange.android.logger.Logger;
@@ -73,6 +70,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
     private static Auth auth;
     private static TmlSession session = null;
+//    public static boolean canWriteToCache;
 
     /**
      * <p>Initializes the SDK</p>
@@ -81,8 +79,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         startRecognizeTouch(context);
         if (getSession() == null) {
             initConfig(context);
-
-            if (!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
+//            canWriteToCache = FileUtils.canWriteToFile(context);
+            if (/*canWriteToCache && */!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
                 Cache cache = TmlAndroid.getCache();
                 if (cache != null && cache instanceof FileCache) {
                     FileCache fileCache = ((FileCache) cache);
@@ -163,18 +161,18 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                     TmlAndroid.addObject(activity);
                     View view = activity.getWindow().getDecorView();
                     if (view != null) {
-//                        ViewUtils.findViews(view);
-                        view.setOnTouchListener(new View.OnTouchListener() {
-
-                            @Override
-                            public boolean onTouch(View view, MotionEvent event) {
-                                if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
-                                    view.getContext().startActivity(new Intent(view.getContext(), TmlAndroidActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                                    return false;
-                                }
-                                return true;
-                            }
-                        });
+//                        view.setOnTouchListener(new View.OnTouchListener() {
+//
+//                            @Override
+//                            public boolean onTouch(View view, MotionEvent event) {
+//                                TmlAndroid.getLogger().debug("onTouch", event.toString());
+//                                if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
+//                                    view.getContext().startActivity(new Intent(view.getContext(), TmlAndroidActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+//                                    return true;
+//                                }
+//                                return false;
+//                            }
+//                        });
                     }
                 }
 

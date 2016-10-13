@@ -105,11 +105,6 @@ public class MobileTranslationCenterActivity extends BaseActivity {
         webView.loadUrl(url);
     }
 
-    @Override
-    public void initUi() {
-
-    }
-
     public static class WebAppInterface {
         private Activity activity;
 

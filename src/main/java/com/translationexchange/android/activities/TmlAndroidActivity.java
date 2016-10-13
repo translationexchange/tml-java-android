@@ -37,7 +37,6 @@ import android.widget.TextView;
 
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
-import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.model.Auth;
 
 public class TmlAndroidActivity extends BaseActivity implements View.OnClickListener {
@@ -59,7 +58,7 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
         userName = (TextView) findViewById(R.id.user_name);
     }
 
-    @TmlAnnotation
+    @Override
     public void initUi() {
         btnChangeLanguage.setText(TmlAndroid.translate("Change language"));
         if (isAuthValid) {

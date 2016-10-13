@@ -133,8 +133,4 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
         finish();
     }
 
-    @Override
-    public void initUi() {
-
-    }
 }

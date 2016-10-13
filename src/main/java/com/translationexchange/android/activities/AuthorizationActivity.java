@@ -104,11 +104,6 @@ public class AuthorizationActivity extends BaseActivity {
         webView.loadUrl(url);
     }
 
-    @Override
-    public void initUi() {
-
-    }
-
     public static class WebAppInterface {
         private Activity activity;
 

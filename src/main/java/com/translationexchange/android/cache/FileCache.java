@@ -58,9 +58,6 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
     }
 
     protected File getCachePath(String cacheKey, Map<String, Object> options) {
-//        if (cacheKey.equals("tml_current_version"))
-//            cacheKey = "version";
-
         List<String> parts = new ArrayList<>(Arrays.asList(cacheKey.split(Pattern.quote("/"))));
         String fileName = parts.remove(parts.size() - 1);
 
@@ -125,6 +122,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
      */
     @Override
     public void store(String key, Object data, Map<String, Object> options) {
+//        if (TmlAndroid.canWriteToCache) {
         if (key.contains("source")) {
             String local = key.substring(0, key.indexOf("/"));
             String currentVersion = (String) options.get("current_version");
@@ -138,6 +136,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
         } else {
             super.store(key, data, options);
         }
+//        }
     }
 
     /**
