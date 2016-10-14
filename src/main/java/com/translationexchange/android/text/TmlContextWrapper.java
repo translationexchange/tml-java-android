@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 
 public class TmlContextWrapper extends ContextWrapper {
 
-    private TmlLayoutInflater mInflater;
+    private LayoutInflater mInflater;
 
     public static ContextWrapper wrap(Context base) {
         return new TmlContextWrapper(base);

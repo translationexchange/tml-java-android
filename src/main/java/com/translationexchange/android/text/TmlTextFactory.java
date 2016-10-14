@@ -100,19 +100,16 @@ class TmlTextFactory {
 
     private static class ToolbarLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
 
-        static String BLANK = " ";
+        static String BLANK = "";
 
         private final WeakReference<TmlTextFactory> mCalligraphyFactory;
         private final WeakReference<Context> mContextRef;
         private final WeakReference<Toolbar> mToolbarReference;
-        private final CharSequence originalSubTitle;
 
-        private ToolbarLayoutListener(final TmlTextFactory tmlTextFactory, final Context context, Toolbar toolbar) {
+        private ToolbarLayoutListener(TmlTextFactory tmlTextFactory, Context context, Toolbar toolbar) {
             mCalligraphyFactory = new WeakReference<>(tmlTextFactory);
             mContextRef = new WeakReference<>(context);
             mToolbarReference = new WeakReference<>(toolbar);
-            originalSubTitle = toolbar.getSubtitle();
-            toolbar.setSubtitle(BLANK);
         }
 
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -135,7 +132,6 @@ class TmlTextFactory {
                 }
             }
             removeSelf(toolbar);
-            toolbar.setSubtitle(originalSubTitle);
         }
 
         private void removeSelf(final Toolbar toolbar) {// Our dark deed is done

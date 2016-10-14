@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TmlAndroid extends com.translationexchange.core.Tml {
 
@@ -70,7 +71,6 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
     private static Auth auth;
     private static TmlSession session = null;
-//    public static boolean canWriteToCache;
 
     /**
      * <p>Initializes the SDK</p>
@@ -79,8 +79,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         startRecognizeTouch(context);
         if (getSession() == null) {
             initConfig(context);
-//            canWriteToCache = FileUtils.canWriteToFile(context);
-            if (/*canWriteToCache && */!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
+            if (!TextUtils.isEmpty(zipVersion) && !TmlAndroid.hasZipVersion(zipVersion)) {
                 Cache cache = TmlAndroid.getCache();
                 if (cache != null && cache instanceof FileCache) {
                     FileCache fileCache = ((FileCache) cache);
@@ -103,8 +102,20 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
             }
 
             TmlService.startSync(context);
-//            startScheduledTasks();
+            startScheduledTasks();
         }
+    }
+
+    public static void startScheduledTasks() {
+        if (applicationScheduleHandler != null)
+            return;
+
+        applicationScheduleHandler = scheduler.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                getLogger().debug("Running scheduled tasks...");
+                getSession().getApplication().submitMissingTranslationKeys();
+            }
+        }, 10, 5, TimeUnit.SECONDS);
     }
 
     private static void initConfig(Context context) {
@@ -159,8 +170,8 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                 public void onActivityStarted(Activity activity) {
                     Tml.getLogger().error("onActivityStarted", activity.getClass().getSimpleName());
                     TmlAndroid.addObject(activity);
-                    View view = activity.getWindow().getDecorView();
-                    if (view != null) {
+//                    View view = activity.getWindow().getDecorView();
+//                    if (view != null) {
 //                        view.setOnTouchListener(new View.OnTouchListener() {
 //
 //                            @Override
@@ -173,7 +184,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
 //                                return false;
 //                            }
 //                        });
-                    }
+//                    }
                 }
 
                 @Override

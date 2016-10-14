@@ -60,18 +60,18 @@ public class LanguageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return languages != null ? languages.size() : 0;
     }
 
-    public static class MainViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private static class MainViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private OnLanguageListener clickListener;
         private Language language;
 
-        public MainViewHolder(View itemView, OnLanguageListener clickListener) {
+        private MainViewHolder(View itemView, OnLanguageListener clickListener) {
             super(itemView);
             this.clickListener = clickListener;
             itemView.setOnClickListener(this);
         }
 
-        public void initUi(Language language) {
+        private void initUi(Language language) {
             this.language = language;
             TextView textView = (TextView) itemView.findViewById(R.id.text);
             ImageView imageView = (ImageView) itemView.findViewById(R.id.image);

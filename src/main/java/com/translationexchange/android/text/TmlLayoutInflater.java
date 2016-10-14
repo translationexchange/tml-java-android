@@ -17,7 +17,8 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
 
     private static final String[] sClassPrefixList = {
             "android.widget.",
-            "android.webkit."
+            "android.webkit.",
+            "android.app."
     };
 
     private final TmlTextFactory mTmlTextFactory;
@@ -39,7 +40,7 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
 
     @Override
     public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) {
-        setPrivateFactoryInternal();
+//        setPrivateFactoryInternal();
         return super.inflate(parser, root, attachToRoot);
     }
 
