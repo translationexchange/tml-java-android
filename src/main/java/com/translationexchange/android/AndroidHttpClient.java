@@ -103,7 +103,7 @@ public class AndroidHttpClient extends HttpClient {
         CacheVersion cacheVersion = Tml.getCache().verifyCacheVersion(getApplication());
 
         // load version from server
-        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode() && !cacheVersion.getVersion().equals("live")) {
+        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode()) {
             cacheVersion.setVersion("live");
             cacheVersion.markAsUpdated();
         } else {
@@ -143,7 +143,6 @@ public class AndroidHttpClient extends HttpClient {
             responseText = Utils.buildJSON(result);
             result.put(EXTENSIONS_KEY, extensions);
         }
-
         Tml.getCache().store(cacheKey, responseText, options);
         return result;
     }
@@ -177,8 +176,8 @@ public class AndroidHttpClient extends HttpClient {
 
         Response response = getOkHttpClient().newCall(request).execute();
         if (!response.isSuccessful()) {
-            if (response.code() == 401 || response.code() == 403) {
-                TmlAndroid.getAndroidApplication().clearAccessCode(true);
+            if (TmlAndroid.getAndroidApplication() != null && (response.code() == 401 || response.code() == 403)) {
+                TmlAndroid.getAndroidApplication().clearAccessCode();
             }
             throw new IOException("Unexpected code " + response);
         }

@@ -43,6 +43,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
@@ -113,7 +114,9 @@ public class AuthorizationActivity extends BaseActivity {
 
         @JavascriptInterface
         public void postMessage(String message) {
-            Auth.saveAuth(message);
+            if (!Auth.saveAuth(message)) {
+                Toast.makeText(activity, "User not authorized", Toast.LENGTH_LONG).show();
+            }
             activity.finish();
         }
     }

@@ -51,6 +51,7 @@ import com.translationexchange.android.R;
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.model.MTC;
 import com.translationexchange.android.service.TmlService;
+import com.translationexchange.core.Translation;
 import com.translationexchange.core.TranslationKey;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -123,8 +124,13 @@ public class MobileTranslationCenterActivity extends BaseActivity {
                 if (mtc.getAction().equals("update")) {
                     if (TmlAndroid.getAndroidApplication() != null) {
                         TranslationKey translationKey = TmlAndroid.getAndroidApplication().getTranslationKey(mtc.getTranslationKey());
-                        translationKey.setLabel(mtc.getTranslation());
-                        TmlService.update();
+                        if (translationKey != null) {
+                            Translation translation = translationKey.findAcceptableTranslation(mtc.getTargetLocale());
+                            if (translation != null) {
+                                translation.setLabel(mtc.getTranslation());
+                                TmlService.update();
+                            }
+                        }
                     }
                 } else if (mtc.getAction().equals("next")) {
                     activity.finish();

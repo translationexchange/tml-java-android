@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.translationexchange.android.TmlAndroid;
 import com.translationexchange.android.TmlSession;
@@ -16,8 +16,10 @@ import com.translationexchange.core.cache.Cache;
 import com.translationexchange.core.languages.Language;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Observer;
 
 public class TmlService extends IntentService {
     private static final String ACTION_SYNC = "com.translationexchange.android.action.SYNC";
@@ -56,24 +58,26 @@ public class TmlService extends IntentService {
     private void actionSync(Context context) {
         try {
             Auth auth = TmlAndroid.getAuth();
-            if (auth != null && auth.isInlineMode()) {
+            if (auth != null && auth.isInlineMode() && !TextUtils.isEmpty(auth.getAccessToken())) {
                 Cache cache = TmlAndroid.getCache();
                 cache.delete("live", Utils.buildMap("directory", true));
             }
 
             Map<String, Object> options = Tml.getConfig().getApplication();
             options.put("sync", true);
+            TmlSession tmlSession = TmlAndroid.getSession();
+            ArrayList<Observer> o = null;
+            if (tmlSession != null) {
+                o = tmlSession.getObservers();
+            }
             TmlAndroid.setSession(new TmlSession(options));
-
-            Locale locale = PreferenceUtil.getCurrentLocation(context);
-            TmlAndroid.getLogger().debug("Locale is: " + locale);
-
-            if (TmlAndroid.getAndroidApplication().isSupportedLocale(locale.getLanguage())) {
-                Language language = TmlAndroid.getAndroidApplication().getLanguage(locale.getLanguage());
-                if (language != null && language.isLoaded()) {
-                    TmlAndroid.switchLanguage(language);
+            if (o != null) {
+                for (Observer observer : o) {
+                    TmlAndroid.getSession().addObserver(observer);
                 }
             }
+
+            actionChangeLanguage(context);
         } finally {
             update();
         }
@@ -110,7 +114,7 @@ public class TmlService extends IntentService {
                                     method.invoke(o);
                                 } catch (Exception e) {
 //                                    e.printStackTrace();
-                                    Log.e("TmlAnnotation", e.getMessage());
+//                                    Log.e("TmlAnnotation", e.getMessage());
                                 }
                             }
                         });

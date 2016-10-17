@@ -56,7 +56,7 @@ import java.util.Map;
 
 public class LanguageSelectorActivity extends BaseActivity implements LanguageAdapter.OnLanguageListener {
 
-    protected static void open(Context context) {
+    public static void open(Context context) {
         context.startActivity(new Intent(context, LanguageSelectorActivity.class));
     }
 
@@ -83,7 +83,7 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
     }
 
     private void loadLanguagesFromApplication() {
-        languageAdapter.setLanguages(TmlAndroid.getApplication().getLanguages());
+        languageAdapter.setLanguages(TmlAndroid.getAndroidApplication().getLanguages());
     }
 
     private void loadLanguagesFromNetwork() {
@@ -132,5 +132,4 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
         PreferenceUtil.setCurrentLocation(getApplicationContext(), new Locale(language.getLocale(), language.getLocale()));
         finish();
     }
-
 }

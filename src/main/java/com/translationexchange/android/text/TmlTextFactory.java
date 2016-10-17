@@ -44,6 +44,8 @@ class TmlTextFactory {
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
 
+            TmlAndroid.getLogger().debug("TextView", view.getClass().getName());
+
             // Check xml attrs, style attrs and text appearance for font path
             String text = resolveFontPath(context, attrs);
             if (TextUtils.isEmpty(text)) {
@@ -55,7 +57,7 @@ class TmlTextFactory {
             }
 
             if (!TextUtils.isEmpty(text)) {
-                logger.debug("onTextChanged init", text);
+                logger.debug("TextView init", text);
 
                 Object o = textView.getTag(R.id.tml_key_hash_id);
                 if (o == null) {
@@ -66,7 +68,6 @@ class TmlTextFactory {
             }
 
             textView.addTextChangedListener(new TmlTextWatcher(textView, logger));
-
             textView.setOnLongClickListener(new TmlLongClickListener());
         }
 

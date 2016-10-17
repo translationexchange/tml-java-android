@@ -1,13 +1,18 @@
 package com.translationexchange.android;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.translationexchange.core.Session;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.cache.CacheVersion;
 import com.translationexchange.core.languages.Language;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observer;
 
 /**
  * Created by ababenko on 10/6/16.
@@ -16,6 +21,7 @@ import java.util.Map;
 public class TmlSession extends Session {
 
     private AndroidApplication application;
+    private ArrayList<Observer> observers = new ArrayList<>();
 
     /**
      * Initializes current application
@@ -84,13 +90,13 @@ public class TmlSession extends Session {
     /**
      * <p>switchLanguage.</p>
      *
-     * @param language a {@link com.translationexchange.core.languages.Language} object.
+     * @param l a {@link com.translationexchange.core.languages.Language} object.
      */
-    public void switchLanguage(Language language) {
+    public void switchLanguage(Language l) {
 //        if (getCurrentLanguage().equals(language))
 //            return;
 
-        language = getApplication().getLanguage(language.getLocale());
+        final Language language = getApplication().getLanguage(l.getLocale());
         setCurrentLanguage(language);
 
         getApplication().resetTranslations();
@@ -99,7 +105,14 @@ public class TmlSession extends Session {
         TmlAndroid.initSource("index", language.getLocale());
 
         setChanged();
-        notifyObservers(language);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                notifyObservers(language);
+            }
+        });
+
     }
 
     /**
@@ -134,5 +147,17 @@ public class TmlSession extends Session {
         options.put(Session.SESSION_KEY, this);
         options.put(TranslationKey.TOKENIZER_KEY, TranslationKey.DEFAULT_TOKENIZERS_STYLED);
         return getCurrentLanguage().translateLocal(label, description, tokens, options);
+    }
+
+    @Override
+    public synchronized void addObserver(Observer o) {
+        super.addObserver(o);
+        if (!observers.contains(o)) {
+            observers.add(o);
+        }
+    }
+
+    public ArrayList<Observer> getObservers() {
+        return observers;
     }
 }

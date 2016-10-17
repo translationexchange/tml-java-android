@@ -1,8 +1,5 @@
 package com.translationexchange.android;
 
-import android.content.Context;
-
-import com.translationexchange.android.activities.AuthorizationActivity;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Source;
@@ -52,21 +49,21 @@ public class AndroidApplication extends Application {
                 super.setAccessToken(TmlAndroid.getAuth().getAccessToken());
             }
         }
-        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isExpired()) {
-            clearAccessCode(true);
-        }
+//        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isExpired()) {
+//            clearAccessCode();
+//        }
         return super.getAccessToken();
     }
 
-    void clearAccessCode(boolean openAuth) {
+    void clearAccessCode() {
         super.setAccessToken(null);
-        if (!TmlAndroid.getObjects().isEmpty() && openAuth) {
-            Object o = TmlAndroid.getObjects().get(0);
-            if (o instanceof Context) {
-                Context context = (Context) o;
-                AuthorizationActivity.auth(context);
-            }
-        }
+//        if (!TmlAndroid.getObjects().isEmpty() && openAuth) {
+//            Object o = TmlAndroid.getObjects().get(0);
+//            if (o instanceof Context) {
+//                Context context = (Context) o;
+//                AuthorizationActivity.auth(context);
+//            }
+//        }
     }
 
     @Override

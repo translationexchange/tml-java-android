@@ -13,7 +13,7 @@ import org.xmlpull.v1.XmlPullParser;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
+class TmlLayoutInflater extends LayoutInflater {
 
     private static final String[] sClassPrefixList = {
             "android.widget.",
@@ -40,7 +40,7 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
 
     @Override
     public View inflate(XmlPullParser parser, ViewGroup root, boolean attachToRoot) {
-//        setPrivateFactoryInternal();
+        setPrivateFactoryInternal();
         return super.inflate(parser, root, attachToRoot);
     }
 
@@ -101,21 +101,6 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
             TmlReflectionUtils.invokeMethod(this, setPrivateFactoryMethod, new PrivateWrapperFactory2((Factory2) getContext(), this, mTmlTextFactory));
         }
         mSetPrivateFactory = true;
-    }
-
-    // ===
-    // LayoutInflater ViewCreators
-    // Works in order of inflation
-    // ===
-
-    /**
-     * The Activity onCreateView (PrivateFactory) is the third port of call for LayoutInflation.
-     * We opted to manual injection over aggressive reflection, this should be less fragile.
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public View onActivityCreateView(View parent, View view, String name, Context context, AttributeSet attrs) {
-        return mTmlTextFactory.onViewCreated(createCustomViewInternal(parent, view, name, context, attrs), context, attrs);
     }
 
     /**
@@ -206,20 +191,28 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
 
         private final Factory mFactory;
         private final TmlLayoutInflater mInflater;
-        private final TmlTextFactory mTmlTextFactory;
+        private final TmlTextFactory mCalligraphyFactory;
 
-        WrapperFactory(Factory factory, TmlLayoutInflater inflater, TmlTextFactory tmlTextFactory) {
+        public WrapperFactory(Factory factory, TmlLayoutInflater inflater, TmlTextFactory calligraphyFactory) {
             mFactory = factory;
             mInflater = inflater;
-            mTmlTextFactory = tmlTextFactory;
+            mCalligraphyFactory = calligraphyFactory;
         }
 
         @Override
         public View onCreateView(String name, Context context, AttributeSet attrs) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                return mTmlTextFactory.onViewCreated(mInflater.createCustomViewInternal(null, mFactory.onCreateView(name, context, attrs), name, context, attrs), context, attrs);
+                return mCalligraphyFactory.onViewCreated(
+                        mInflater.createCustomViewInternal(
+                                null, mFactory.onCreateView(name, context, attrs), name, context, attrs
+                        ),
+                        context, attrs
+                );
             }
-            return mTmlTextFactory.onViewCreated(mFactory.onCreateView(name, context, attrs), context, attrs);
+            return mCalligraphyFactory.onViewCreated(
+                    mFactory.onCreateView(name, context, attrs),
+                    context, attrs
+            );
         }
     }
 
@@ -228,22 +221,26 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private static class WrapperFactory2 implements Factory2 {
-        final Factory2 mFactory2;
-        final TmlTextFactory mTmlTextFactory;
+        protected final Factory2 mFactory2;
+        protected final TmlTextFactory mCalligraphyFactory;
 
-        WrapperFactory2(Factory2 factory2, TmlTextFactory tmlTextFactory) {
+        public WrapperFactory2(Factory2 factory2, TmlTextFactory calligraphyFactory) {
             mFactory2 = factory2;
-            mTmlTextFactory = tmlTextFactory;
+            mCalligraphyFactory = calligraphyFactory;
         }
 
         @Override
         public View onCreateView(String name, Context context, AttributeSet attrs) {
-            return mTmlTextFactory.onViewCreated(mFactory2.onCreateView(name, context, attrs), context, attrs);
+            return mCalligraphyFactory.onViewCreated(
+                    mFactory2.onCreateView(name, context, attrs),
+                    context, attrs);
         }
 
         @Override
         public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-            return mTmlTextFactory.onViewCreated(mFactory2.onCreateView(parent, name, context, attrs), context, attrs);
+            return mCalligraphyFactory.onViewCreated(
+                    mFactory2.onCreateView(parent, name, context, attrs),
+                    context, attrs);
         }
     }
 
@@ -256,14 +253,20 @@ class TmlLayoutInflater extends LayoutInflater implements TmlActivityFactory {
 
         private final TmlLayoutInflater mInflater;
 
-        PrivateWrapperFactory2(Factory2 factory2, TmlLayoutInflater inflater, TmlTextFactory tmlTextFactory) {
-            super(factory2, tmlTextFactory);
+        public PrivateWrapperFactory2(Factory2 factory2, TmlLayoutInflater inflater, TmlTextFactory calligraphyFactory) {
+            super(factory2, calligraphyFactory);
             mInflater = inflater;
         }
 
         @Override
         public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
-            return mTmlTextFactory.onViewCreated(mInflater.createCustomViewInternal(parent, mFactory2.onCreateView(parent, name, context, attrs), name, context, attrs), context, attrs);
+            return mCalligraphyFactory.onViewCreated(
+                    mInflater.createCustomViewInternal(parent,
+                            mFactory2.onCreateView(parent, name, context, attrs),
+                            name, context, attrs
+                    ),
+                    context, attrs
+            );
         }
     }
 

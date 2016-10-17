@@ -71,7 +71,7 @@ public class Auth {
         return null;
     }
 
-    public static void saveAuth(String message) {
+    public static boolean saveAuth(String message) {
         byte[] dataDecoded = Base64.decode(message, Base64.DEFAULT);
         String s = new String(dataDecoded);
         Gson gson = new Gson();
@@ -82,7 +82,9 @@ public class Auth {
             byte[] bytes = Base64.encode(message.getBytes(), Base64.DEFAULT);
             TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
             TmlAndroid.setAuth(auth);
+            return true;
         }
+        return false;
     }
 
     public void save() {

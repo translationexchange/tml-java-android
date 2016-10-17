@@ -34,14 +34,17 @@ package com.translationexchange.android;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.translationexchange.android.activities.TmlAndroidActivity;
 import com.translationexchange.android.cache.FileCache;
 import com.translationexchange.android.cache.TmlCacheVersion;
 import com.translationexchange.android.logger.Logger;
@@ -51,6 +54,7 @@ import com.translationexchange.android.tokenizers.SpannableStringTokenizer;
 import com.translationexchange.android.utils.Decompress;
 import com.translationexchange.android.utils.FileUtils;
 import com.translationexchange.android.utils.PreferenceUtil;
+import com.translationexchange.android.utils.ViewUtils;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.Utils;
@@ -63,6 +67,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Observer;
 import java.util.concurrent.TimeUnit;
 
 public class TmlAndroid extends com.translationexchange.core.Tml {
@@ -149,14 +154,14 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         TmlService.startSync(context);
     }
 
-    public static void destroy(Context context) {
-        stopScheduledTasks();
-        stop();
-        if (activityLifecycleCallbacks != null) {
-            ((Application) context.getApplicationContext()).unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
-            activityLifecycleCallbacks = null;
-        }
-    }
+//    public static void destroy(Context context) {
+//        stopScheduledTasks();
+//        stop();
+//        if (activityLifecycleCallbacks != null) {
+//            ((Application) context.getApplicationContext()).unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+//            activityLifecycleCallbacks = null;
+//        }
+//    }
 
     private static void startRecognizeTouch(Context context) {
         if (activityLifecycleCallbacks == null) {
@@ -170,21 +175,22 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
                 public void onActivityStarted(Activity activity) {
                     Tml.getLogger().error("onActivityStarted", activity.getClass().getSimpleName());
                     TmlAndroid.addObject(activity);
-//                    View view = activity.getWindow().getDecorView();
-//                    if (view != null) {
-//                        view.setOnTouchListener(new View.OnTouchListener() {
-//
-//                            @Override
-//                            public boolean onTouch(View view, MotionEvent event) {
-//                                TmlAndroid.getLogger().debug("onTouch", event.toString());
-//                                if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
-//                                    view.getContext().startActivity(new Intent(view.getContext(), TmlAndroidActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-//                                    return true;
-//                                }
-//                                return false;
-//                            }
-//                        });
-//                    }
+                    View view = activity.getWindow().getDecorView();
+                    if (view != null) {
+                        ViewUtils.findViews(view);
+                        view.setOnTouchListener(new View.OnTouchListener() {
+
+                            @Override
+                            public boolean onTouch(View view, MotionEvent event) {
+                                TmlAndroid.getLogger().debug("onTouch", event.toString());
+                                if (event.getAction() == MotionEvent.ACTION_POINTER_3_UP) {
+                                    view.getContext().startActivity(new Intent(view.getContext(), TmlAndroidActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
+                    }
                 }
 
                 @Override
@@ -478,7 +484,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         TmlAndroid.auth = auth;
         if (auth == null) {
             TmlAndroid.getCache().delete("auth", Utils.buildMap());
-            TmlAndroid.getAndroidApplication().clearAccessCode(false);
+            TmlAndroid.getAndroidApplication().clearAccessCode();
         } else {
             TmlAndroid.getAndroidApplication().setAccessToken(auth.getAccessToken());
         }
@@ -527,5 +533,22 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
      */
     public static void setApplication(com.translationexchange.core.Application application) {
         getSession().setApplication(application);
+    }
+
+    /**
+     * <p>addObserver.</p>
+     *
+     * @param observer a {@link java.util.Observer} object.
+     */
+    public static void addObserver(Observer observer) {
+        if (getSession() != null) {
+            getSession().addObserver(observer);
+        }
+    }
+
+    public static void deleteObserver(Observer observer) {
+        if (getSession() != null) {
+            getSession().deleteObserver(observer);
+        }
     }
 }

@@ -74,6 +74,7 @@ public class LanguageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         private void initUi(Language language) {
             this.language = language;
             TextView textView = (TextView) itemView.findViewById(R.id.text);
+            textView.setOnClickListener(this);
             ImageView imageView = (ImageView) itemView.findViewById(R.id.image);
             textView.setText(language.getEnglishName() + " (" + language.getNativeName() + ")");
             ImageLoader.getInstance().displayImage(language.getFlagUrl(), imageView, new SimpleImageLoadingListener() {
