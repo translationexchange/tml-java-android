@@ -52,6 +52,15 @@ import com.translationexchange.android.model.Auth;
 @SuppressLint("SetJavaScriptEnabled")
 public class AuthorizationActivity extends BaseActivity {
 
+    public static void auth() {
+        if (!TmlAndroid.getObjects().isEmpty()) {
+            Object o = TmlAndroid.getObjects().get(0);
+            if (o instanceof Context) {
+                Context context = (Context) o;
+                AuthorizationActivity.auth(context);
+            }
+        }
+    }
     public static void auth(Context context) {
         context.startActivity(new Intent(context, AuthorizationActivity.class).putExtra("url", TmlAndroid.getSession().getApplication().getAuthUrl()));
     }

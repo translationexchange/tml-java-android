@@ -32,11 +32,13 @@ class TmlTextWatcher implements TextWatcher {
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (s.length() > 0) {
             TextView view = textView.get();
-            if (view != null && !(s instanceof Spannable)) {
+            if (view != null) {
                 logger.debug("onTextChanged set new", s.toString());
-                view.removeTextChangedListener(this);
-                view.setText(TmlAndroid.translate(s.toString()));
-                view.addTextChangedListener(this);
+                if (!(s instanceof Spannable)) {
+                    view.removeTextChangedListener(this);
+                    view.setText(TmlAndroid.translate(s.toString()));
+                    view.addTextChangedListener(this);
+                }
             }
         }
     }

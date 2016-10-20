@@ -141,7 +141,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
     private static void stop() {
         Map<String, Object> application = getConfig().getApplication();
         setApplication(null);
-        setSession(null);
+//        setSession(null);
         setCache(null);
         setConfig(null);
 
@@ -484,7 +484,7 @@ public class TmlAndroid extends com.translationexchange.core.Tml {
         TmlAndroid.auth = auth;
         if (auth == null) {
             TmlAndroid.getCache().delete("auth", Utils.buildMap());
-            TmlAndroid.getAndroidApplication().clearAccessCode();
+            TmlAndroid.getAndroidApplication().setAccessToken(null);
         } else {
             TmlAndroid.getAndroidApplication().setAccessToken(auth.getAccessToken());
         }

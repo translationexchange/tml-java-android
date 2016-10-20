@@ -5,6 +5,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.translationexchange.android.activities.AuthorizationActivity;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Tml;
@@ -135,6 +136,12 @@ public class AndroidHttpClient extends HttpClient {
 
         result = processJSONResponse(responseText, options);
 
+        if (result != null && result.get("status") != null && result.get("status").toString().equals("403") && TmlAndroid.getAuth() != null) {
+            TmlAndroid.setAuth(null);
+            AuthorizationActivity.auth();
+            throw new Exception("Access token not provided");
+        }
+
         Map<String, Object> extensions = (Map<String, Object>) result.get(EXTENSIONS_KEY);
 
         // never store extension in cache
@@ -176,8 +183,9 @@ public class AndroidHttpClient extends HttpClient {
 
         Response response = getOkHttpClient().newCall(request).execute();
         if (!response.isSuccessful()) {
-            if (TmlAndroid.getAndroidApplication() != null && (response.code() == 401 || response.code() == 403)) {
-                TmlAndroid.getAndroidApplication().clearAccessCode();
+            if (TmlAndroid.getAuth() != null && (response.code() == 401 || response.code() == 403)) {
+                TmlAndroid.setAuth(null);
+                AuthorizationActivity.auth();
             }
             throw new IOException("Unexpected code " + response);
         }
@@ -187,5 +195,34 @@ public class AndroidHttpClient extends HttpClient {
         String responseText = response.body().string();
         Tml.getLogger().debug("HTTP Post response: " + responseText);
         return responseText;
+    }
+
+    /**
+     * Converts response text to JSON
+     *
+     * @param responseText
+     * @param options
+     * @return
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> processJSONResponse(String responseText, Map<String, Object> options) throws Exception {
+        String cacheKey = (String) options.get("cache_key");
+
+        Map<String, Object> result = (Map<String, Object>) Utils.parseJSON(responseText);
+
+        if (!(result instanceof Map)) {
+            throw new Exception("Invalid response type: response must always be a map.");
+        }
+
+        Map<String, Object> data = (Map<String, Object>) Utils.parseJSON(responseText);
+
+        if (data != null && data.get("error") != null) {
+            if (isCacheEnabled(options)) {
+                Tml.getCache().delete(cacheKey, options);
+            }
+        }
+
+        return result;
     }
 }

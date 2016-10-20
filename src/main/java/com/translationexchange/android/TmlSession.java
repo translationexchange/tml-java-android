@@ -6,6 +6,7 @@ import android.os.Looper;
 import com.translationexchange.core.Session;
 import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
+import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 import com.translationexchange.core.languages.Language;
 
@@ -39,8 +40,10 @@ public class TmlSession extends Session {
             setApplication(new AndroidApplication(options));
             getApplication().setSession(this);
             if (sync) {
-                getApplication().load();
-                setCurrentLocale(getApplication().getFirstAcceptedLocale((String) options.get("locale")));
+                getApplication().load(Utils.buildMap());
+                if (getApplication().isLoaded()) {
+                    setCurrentLocale(getApplication().getFirstAcceptedLocale((String) options.get("locale")));
+                }
             } else {
                 String cacheVersion = (String) options.get(CacheVersion.VERSION_KEY);
                 getApplication().loadLocal(cacheVersion);

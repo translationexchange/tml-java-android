@@ -49,21 +49,7 @@ public class AndroidApplication extends Application {
                 super.setAccessToken(TmlAndroid.getAuth().getAccessToken());
             }
         }
-//        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isExpired()) {
-//            clearAccessCode();
-//        }
         return super.getAccessToken();
-    }
-
-    void clearAccessCode() {
-        super.setAccessToken(null);
-//        if (!TmlAndroid.getObjects().isEmpty() && openAuth) {
-//            Object o = TmlAndroid.getObjects().get(0);
-//            if (o instanceof Context) {
-//                Context context = (Context) o;
-//                AuthorizationActivity.auth(context);
-//            }
-//        }
     }
 
     @Override
@@ -116,6 +102,34 @@ public class AndroidApplication extends Application {
     public void loadLocal(String cacheVersion) {
         try {
             Map<String, Object> data = getHttpClient().getJSONMap(Utils.buildMap("cache_key", "application", CacheVersion.VERSION_KEY, cacheVersion));
+            if (data == null || data.isEmpty()) {
+                setDefaultLocale(Tml.getConfig().getDefaultLocale());
+                addLanguage(Tml.getConfig().getDefaultLanguage());
+                Tml.getLogger().debug("No release has been published or no cache has been provided");
+                setLoaded(false);
+            } else {
+                updateAttributes(data);
+                setLoaded(true);
+            }
+        } catch (Exception ex) {
+            setLoaded(false);
+            addLanguage(Tml.getConfig().getDefaultLanguage());
+            Tml.getLogger().logException("Failed to load application", ex);
+        }
+    }
+
+    /**
+     * Loads application from the service with extra parameters
+     *
+     * @param params Options for loading application
+     */
+    public void load(Map<String, Object> params) {
+        try {
+            Tml.getLogger().debug("Loading application...");
+            Map<String, Object> data = getHttpClient().getJSONMap("projects/" + getKey() + "/definition",
+                    params,
+                    Utils.buildMap("cache_key", "application")
+            );
             if (data == null || data.isEmpty()) {
                 setDefaultLocale(Tml.getConfig().getDefaultLocale());
                 addLanguage(Tml.getConfig().getDefaultLanguage());

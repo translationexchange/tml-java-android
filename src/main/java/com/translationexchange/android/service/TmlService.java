@@ -65,15 +65,19 @@ public class TmlService extends IntentService {
 
             Map<String, Object> options = Tml.getConfig().getApplication();
             options.put("sync", true);
-            TmlSession tmlSession = TmlAndroid.getSession();
+            TmlSession tmlSessionOld = TmlAndroid.getSession();
             ArrayList<Observer> o = null;
-            if (tmlSession != null) {
-                o = tmlSession.getObservers();
+            if (tmlSessionOld != null) {
+                o = tmlSessionOld.getObservers();
             }
             TmlAndroid.setSession(new TmlSession(options));
-            if (o != null) {
-                for (Observer observer : o) {
-                    TmlAndroid.getSession().addObserver(observer);
+            if (!TmlAndroid.getAndroidApplication().isLoaded()) {
+                TmlAndroid.setSession(tmlSessionOld);
+            } else {
+                if (o != null) {
+                    for (Observer observer : o) {
+                        TmlAndroid.getSession().addObserver(observer);
+                    }
                 }
             }
 
@@ -88,12 +92,11 @@ public class TmlService extends IntentService {
             Locale locale = PreferenceUtil.getCurrentLocation(context);
             TmlAndroid.getLogger().debug("Locale is: " + locale);
 
-            if (!TmlAndroid.getAndroidApplication().isSupportedLocale(locale.getLanguage()))
-                return;
-
-            Language language = TmlAndroid.getAndroidApplication().getLanguage(locale.getLanguage());
-            if (language != null && language.isLoaded()) {
-                TmlAndroid.switchLanguage(language);
+            if (TmlAndroid.getAndroidApplication().isLoaded() && TmlAndroid.getAndroidApplication().isSupportedLocale(locale.getLanguage())) {
+                Language language = TmlAndroid.getAndroidApplication().getLanguage(locale.getLanguage());
+                if (language != null && language.isLoaded()) {
+                    TmlAndroid.switchLanguage(language);
+                }
             }
         } finally {
             update();
