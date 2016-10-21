@@ -22,6 +22,7 @@ public class TmlLongClickListener implements View.OnLongClickListener {
                 Tools tools = TmlAndroid.getAndroidApplication().getTools();
                 Auth auth = TmlAndroid.getAuth();
                 String keyHash = o.toString();
+                TmlAndroid.getLogger().debug("Long_Click", "Key hash - " + keyHash);
                 String url = tools.getMobileTranslationCenterKey().replace("{translation_key}", keyHash).replace("{access_token}", auth.getAccessToken()).replace("{locale}", PreferenceUtil.getCurrentLocation(view.getContext()).getLanguage());
                 MobileTranslationCenterActivity.translate(view.getContext(), url);
                 return true;

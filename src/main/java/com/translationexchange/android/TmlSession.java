@@ -163,4 +163,9 @@ public class TmlSession extends Session {
     public ArrayList<Observer> getObservers() {
         return observers;
     }
+
+    public void update(){
+        setChanged();
+        notifyObservers();
+    }
 }

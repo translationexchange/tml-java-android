@@ -129,6 +129,16 @@ public class MobileTranslationCenterActivity extends BaseActivity {
                             if (translation != null) {
                                 translation.setLabel(mtc.getTranslation());
                                 TmlService.update();
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        TmlAndroid.getSession().update();
+                                    }
+                                });
+                            } else {
+                                if (activity != null) {
+                                    TmlAndroid.reInit(activity);
+                                }
                             }
                         }
                     }
