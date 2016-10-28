@@ -2,8 +2,7 @@ package com.translationexchange.android.utils;
 
 import android.content.Context;
 
-import com.translationexchange.android.TmlAndroid;
-import com.translationexchange.core.cache.CacheVersion;
+import com.translationexchange.android.Tml;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -57,7 +56,7 @@ public class Decompress {
             FileInputStream fin = new FileInputStream(zipFile);
             unzip(fin, location);
         } catch (FileNotFoundException e) {
-            TmlAndroid.getLogger().error(TAG, e.getMessage(), e);
+            Tml.getLogger().error(TAG, e.getMessage(), e);
         }
     }
 
@@ -70,7 +69,7 @@ public class Decompress {
             TarArchiveEntry tarArchiveEntry = null;
 
             while ((tarArchiveEntry = is.getNextTarEntry()) != null) {
-                TmlAndroid.getLogger().debug(TAG, "Unzipping " + tarArchiveEntry.getName());
+                Tml.getLogger().debug(TAG, "Unzipping " + tarArchiveEntry.getName());
 
                 if (tarArchiveEntry.isDirectory()) {
                     dirChecker(destination, tarArchiveEntry.getName());
@@ -88,7 +87,7 @@ public class Decompress {
             }
             is.close();
         } catch (Exception e) {
-            TmlAndroid.getLogger().error(TAG, "unzip = " + e.getMessage(), e);
+            Tml.getLogger().error(TAG, "unzip = " + e.getMessage(), e);
         }
     }
 
@@ -97,7 +96,7 @@ public class Decompress {
         if (!f.isDirectory()) {
             boolean success = f.mkdirs();
             if (!success) {
-                TmlAndroid.getLogger().warn(TAG, "Failed to create folder " + f.getName());
+                Tml.getLogger().warn(TAG, "Failed to create folder " + f.getName());
             }
         }
     }

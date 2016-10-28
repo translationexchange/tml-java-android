@@ -33,7 +33,7 @@ package com.translationexchange.android.tasks;
 
 import android.os.AsyncTask;
 
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.android.interfaces.Localizable;
 
@@ -59,8 +59,8 @@ public class LocalizationTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void result) {
         super.onPostExecute(result);
-        TmlAndroid.beginBlockWithOptions(Utils.buildMap("source", translatable.getLocalizationSource()));
+        Tml.beginBlockWithOptions(Utils.map("source", translatable.getLocalizationSource()));
         translatable.onLocalize();
-        TmlAndroid.endBlock();
+        Tml.endBlock();
     }
 }

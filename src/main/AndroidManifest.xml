@@ -16,18 +16,22 @@
 
         <activity
             android:name=".activities.TmlAndroidActivity"
-            android:label="Tml Android SDK" />
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="Tml Android SDK"
+            android:theme="@style/App.Dialog" />
         <activity
             android:name=".activities.AuthorizationActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard"
             android:label="Authorization" />
         <activity
             android:name=".activities.LanguageSelectorActivity"
-            android:label="Change language" />
+            android:configChanges="orientation|keyboardHidden|keyboard"
+            android:label="Choose Language"
+            android:theme="@style/App.Dialog" />
         <activity
             android:name=".activities.MobileTranslationCenterActivity"
             android:configChanges="orientation|keyboardHidden|keyboard"
-            android:label="Mobile translation center"
-            android:screenOrientation="nosensor" />
+            android:label="Translation Exchange" />
     </application>
 
 </manifest>

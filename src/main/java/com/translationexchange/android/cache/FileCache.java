@@ -31,9 +31,8 @@
 
 package com.translationexchange.android.cache;
 
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.core.Application;
-import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 
@@ -73,7 +72,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
             fileCachePath = new File(getCachePath(), Utils.join(parts.toArray(), File.separator));
 
         if (!fileCachePath.exists()) {
-            TmlAndroid.getLogger().debug("FileCache", fileCachePath.getPath() + " created: " + fileCachePath.mkdirs());
+            Tml.getLogger().debug("FileCache", fileCachePath.getPath() + " created: " + fileCachePath.mkdirs());
         }
         return new File(fileCachePath, fileName + ".json");
     }
@@ -82,7 +81,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
         if (cachePath == null) {
             cachePath = new File(getApplicationPath(), "Tml_cache");
             if (!cachePath.exists()) {
-                TmlAndroid.getLogger().debug("FileCache", cachePath.getPath() + " path created: " + cachePath.mkdirs());
+                Tml.getLogger().debug("FileCache", cachePath.getPath() + " path created: " + cachePath.mkdirs());
             }
         }
         return cachePath;
@@ -96,15 +95,15 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
             File fileCachePath = getCachePath();
             File file = new File(fileCachePath, currentVersion + File.separator + local + "/translations.json");
             if (!file.exists()) {
-                TmlAndroid.getLogger().debug("FileCache", "Cache miss: " + key);
+                Tml.getLogger().debug("FileCache", "Cache miss: " + key);
                 return null;
             }
 
             try {
-                TmlAndroid.getLogger().debug("FileCache", "Cache hit: " + key);
+                Tml.getLogger().debug("FileCache", "Cache hit: " + key);
                 return readFile(file);
             } catch (Exception ex) {
-                TmlAndroid.getLogger().logException(ex);
+                Tml.getLogger().logException(ex);
                 return null;
             }
 
@@ -122,7 +121,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
      */
     @Override
     public void store(String key, Object data, Map<String, Object> options) {
-//        if (TmlAndroid.canWriteToCache) {
+//        if (Tml.canWriteToCache) {
         if (key.contains("source")) {
             String local = key.substring(0, key.indexOf("/"));
             String currentVersion = (String) options.get("current_version");
@@ -154,7 +153,7 @@ public class FileCache extends com.translationexchange.core.cache.FileCache {
 //        // load version from server
 //        if (cacheVersion.isExpired() || cacheVersion.isUnreleased()) {
 //            Tml.getLogger().debug("load version from the server...");
-//            cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.buildMap("uncompressed", true)));
+//            cacheVersion.updateFromCDN(application.getHttpClient().getFromCDN("version", Utils.map("uncompressed", true)));
 //        }
 //        Tml.getLogger().debug("Cache version: " + cacheVersion.getVersion() + " " + cacheVersion.getExpirationMessage());
         return cacheVersion;

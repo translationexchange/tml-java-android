@@ -43,7 +43,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.translationexchange.android.R;
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.android.adapters.LanguageAdapter;
 import com.translationexchange.android.utils.PreferenceUtil;
 import com.translationexchange.core.Utils;
@@ -83,11 +83,11 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
     }
 
     private void loadLanguagesFromApplication() {
-        languageAdapter.setLanguages(TmlAndroid.getAndroidApplication().getLanguages());
+        languageAdapter.setLanguages(Tml.getAndroidApplication().getLanguages());
     }
 
     private void loadLanguagesFromNetwork() {
-        final ProgressDialog dialog = ProgressDialog.show(this, TmlAndroid.translate("Language Selector"), TmlAndroid.translate("Loading languages..."));
+        final ProgressDialog dialog = ProgressDialog.show(this, Tml.tr("Language Selector"), Tml.tr("Loading languages..."));
 
         new AsyncTask<Void, Void, List<Language>>() {
 
@@ -100,7 +100,7 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
             @Override
             protected List<Language> doInBackground(Void... params) {
                 try {
-                    Map<String, Object> results = TmlAndroid.getAndroidApplication().getHttpClient().getJSON("application/languages", Utils.buildMap(), Utils.buildMap("cache_key", "application"));
+                    Map<String, Object> results = Tml.getAndroidApplication().getHttpClient().getJSON("application/languages", Utils.map(), Utils.map("cache_key", "application"));
                     List<Map<String, Object>> langs = (List<Map<String, Object>>) results.get("languages");
                     List<Language> languages = new ArrayList<Language>();
                     for (Map<String, Object> attrs : langs) {
@@ -108,7 +108,7 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
                     }
                     return languages;
                 } catch (Exception ex) {
-                    TmlAndroid.getLogger().logException("Failed to load languages", ex);
+                    Tml.getLogger().logException("Failed to load languages", ex);
                 }
                 return null;
             }

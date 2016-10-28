@@ -18,13 +18,13 @@ public class ViewUtils {
 //                v.setOnLongClickListener(new View.OnLongClickListener() {
 //                    @Override
 //                    public boolean onLongClick(View view) {
-//                        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode() && TmlAndroid.getAndroidApplication() != null && TmlAndroid.getAndroidApplication().getTools() != null) {
+//                        if (Tml.getAuth() != null && Tml.getAuth().isInlineMode() && Tml.getAndroidApplication() != null && Tml.getAndroidApplication().getTools() != null) {
 //                            String text = ((TextView) view).getText().toString();
-//                            Tools tools = TmlAndroid.getAndroidApplication().getTools();
-//                            Auth auth = TmlAndroid.getAuth();
+//                            Tools tools = Tml.getAndroidApplication().getTools();
+//                            Auth auth = Tml.getAuth();
 //                            String keyHash = TranslationKey.generateKey(text);
 //                            String url = tools.getMobileTranslationCenterKey().replace("{translation_key}", keyHash).replace("{access_token}", auth.getAccessToken()).replace("{locale}", PreferenceUtil.getCurrentLocation(view.getContext()).getLanguage());
-//                            MobileTranslationCenterActivity.translate(view.getContext(), url);
+//                            MobileTranslationCenterActivity.tr(view.getContext(), url);
 //                            return true;
 //                        }
 //                        return false;

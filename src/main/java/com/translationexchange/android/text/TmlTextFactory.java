@@ -11,7 +11,7 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 import com.translationexchange.android.R;
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.android.logger.Logger;
 import com.translationexchange.core.TranslationKey;
 
@@ -44,7 +44,7 @@ class TmlTextFactory {
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
 
-            TmlAndroid.getLogger().debug("TextView", view.getClass().getName());
+            Tml.getLogger().debug("TextView", view.getClass().getName());
 
             // Check xml attrs, style attrs and text appearance for font path
             String text = resolveFontPath(context, attrs);
@@ -64,7 +64,7 @@ class TmlTextFactory {
                     textView.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(text));
                 }
 
-                textView.setText(TmlAndroid.translate(text));
+                textView.setText(Tml.tr(text));
             }
 
             textView.addTextChangedListener(new TmlTextWatcher(textView, logger));

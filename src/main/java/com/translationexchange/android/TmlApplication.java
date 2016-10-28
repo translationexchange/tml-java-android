@@ -3,7 +3,6 @@ package com.translationexchange.android;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
 import com.translationexchange.core.Source;
-import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
@@ -17,14 +16,14 @@ import java.util.Map;
 /**
  * Created by ababenko on 9/7/16.
  */
-public class AndroidApplication extends Application {
+public class TmlApplication extends Application {
 
-    private AndroidHttpClient httpClient;
+    private TmlHttpClient httpClient;
 
     /**
      * Default constructor
      */
-    public AndroidApplication() {
+    public TmlApplication() {
         super();
     }
 
@@ -33,7 +32,7 @@ public class AndroidApplication extends Application {
      *
      * @param attributes a {@link Map} object.
      */
-    public AndroidApplication(Map<String, Object> attributes) {
+    public TmlApplication(Map<String, Object> attributes) {
         super(attributes);
     }
 
@@ -45,8 +44,8 @@ public class AndroidApplication extends Application {
     @Override
     public String getAccessToken() {
         if (super.getAccessToken() == null) {
-            if (TmlAndroid.getAuth() != null) {
-                super.setAccessToken(TmlAndroid.getAuth().getAccessToken());
+            if (Tml.getAuth() != null) {
+                super.setAccessToken(Tml.getAuth().getAccessToken());
             }
         }
         return super.getAccessToken();
@@ -55,7 +54,7 @@ public class AndroidApplication extends Application {
     @Override
     public HttpClient getHttpClient() {
         if (httpClient == null) {
-            httpClient = new AndroidHttpClient(this);
+            httpClient = new TmlHttpClient(this);
         }
         return httpClient;
     }
@@ -64,7 +63,7 @@ public class AndroidApplication extends Application {
      * Submits missing translations keys to the server
      */
     public synchronized void submitMissingTranslationKeys() {
-        if (getMissingTranslationKeysBySources().size() == 0 || TmlAndroid.getAuth() == null || !TmlAndroid.getAuth().isInlineMode())
+        if (getMissingTranslationKeysBySources().size() == 0 || Tml.getAuth() == null || !Tml.getAuth().isInlineMode())
             return;
 //        if (!isKeyRegistrationEnabled() || getMissingTranslationKeysBySources().size() == 0)
 //            return;
@@ -91,17 +90,17 @@ public class AndroidApplication extends Application {
                 keys.add(translationKey.toMap());
             }
 
-            params.add(Utils.buildMap("source", source, "keys", keys));
+            params.add(Utils.map("source", source, "keys", keys));
         }
 
-        registerKeys(Utils.buildMap("source_keys", Utils.buildJSON(params), "app_id", getKey()));
+        registerKeys(Utils.map("source_keys", Utils.buildJSON(params), "app_id", getKey()));
 
         this.missingTranslationKeysBySources.clear();
     }
 
     public void loadLocal(String cacheVersion) {
         try {
-            Map<String, Object> data = getHttpClient().getJSONMap(Utils.buildMap("cache_key", "application", CacheVersion.VERSION_KEY, cacheVersion));
+            Map<String, Object> data = getHttpClient().getJSONMap(Utils.map("cache_key", "application", CacheVersion.VERSION_KEY, cacheVersion));
             if (data == null || data.isEmpty()) {
                 setDefaultLocale(Tml.getConfig().getDefaultLocale());
                 addLanguage(Tml.getConfig().getDefaultLanguage());
@@ -128,7 +127,7 @@ public class AndroidApplication extends Application {
             Tml.getLogger().debug("Loading application...");
             Map<String, Object> data = getHttpClient().getJSONMap("projects/" + getKey() + "/definition",
                     params,
-                    Utils.buildMap("cache_key", "application")
+                    Utils.map("cache_key", "application")
             );
             if (data == null || data.isEmpty()) {
                 setDefaultLocale(Tml.getConfig().getDefaultLocale());
@@ -154,7 +153,7 @@ public class AndroidApplication extends Application {
      */
     public Language getLanguageLocal(String locale, String cacheVersion) {
         if (getLanguagesByLocale().get(locale) == null) {
-            getLanguagesByLocale().put(locale, new Language(Utils.buildMap("application", this, "locale", locale)));
+            getLanguagesByLocale().put(locale, new Language(Utils.map("application", this, "locale", locale)));
         }
 
         Language language = getLanguagesByLocale().get(locale);
@@ -174,7 +173,7 @@ public class AndroidApplication extends Application {
      */
     public Source getSource(String key, String locale, Map<String, Object> options) {
         if (getSourcesByKeys().get(key) == null) {
-            TmlSource source = new TmlSource(Utils.buildMap("application", this, "key", key, "locale", locale));
+            TmlSource source = new TmlSource(Utils.map("application", this, "key", key, "locale", locale));
             if (options == null) {
                 source.load(null);
             } else {

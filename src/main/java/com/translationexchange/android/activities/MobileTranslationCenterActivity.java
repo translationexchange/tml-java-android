@@ -48,7 +48,7 @@ import android.widget.ProgressBar;
 
 import com.google.gson.Gson;
 import com.translationexchange.android.R;
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.android.model.MTC;
 import com.translationexchange.android.service.TmlService;
 import com.translationexchange.core.Translation;
@@ -82,14 +82,14 @@ public class MobileTranslationCenterActivity extends BaseActivity {
                 super.onPageStarted(view, url, favicon);
                 progressBar.setProgress(0);
                 progressBar.setVisibility(View.VISIBLE);
-                TmlAndroid.getLogger().debug("web_Started", url);
+                Tml.getLogger().debug("web_Started", url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(View.GONE);
-                TmlAndroid.getLogger().debug("web_Finished", url);
+                Tml.getLogger().debug("web_Finished", url);
             }
         });
 
@@ -102,7 +102,7 @@ public class MobileTranslationCenterActivity extends BaseActivity {
         });
 
         String url = getIntent().getStringExtra("url");
-        TmlAndroid.getLogger().info("web_translate_url", url);
+        Tml.getLogger().info("web_translate_url", url);
         webView.loadUrl(url);
     }
 
@@ -118,12 +118,12 @@ public class MobileTranslationCenterActivity extends BaseActivity {
             byte[] dataDecoded = Base64.decode(text, Base64.DEFAULT);
             String message = new String(dataDecoded);
             Gson gson = new Gson();
-            TmlAndroid.getLogger().info("web_postMessage", message);
+            Tml.getLogger().info("web_postMessage", message);
             MTC mtc = gson.fromJson(message, MTC.class);
             if (mtc != null && !TextUtils.isEmpty(mtc.getAction())) {
                 if (mtc.getAction().equals("update")) {
-                    if (TmlAndroid.getAndroidApplication() != null) {
-                        TranslationKey translationKey = TmlAndroid.getAndroidApplication().getTranslationKey(mtc.getTranslationKey());
+                    if (Tml.getAndroidApplication() != null) {
+                        TranslationKey translationKey = Tml.getAndroidApplication().getTranslationKey(mtc.getTranslationKey());
                         if (translationKey != null) {
                             Translation translation = translationKey.findAcceptableTranslation(mtc.getTargetLocale());
                             if (translation != null) {
@@ -132,12 +132,12 @@ public class MobileTranslationCenterActivity extends BaseActivity {
                                 activity.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        TmlAndroid.getSession().update();
+                                        Tml.getSession().update();
                                     }
                                 });
                             } else {
                                 if (activity != null) {
-                                    TmlAndroid.reInit(activity);
+                                    Tml.reInit(activity);
                                 }
                             }
                         }

@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -79,7 +79,7 @@ public class FileUtils {
         File file = new File(context.getFilesDir(), "TML");
 //        File file = new File(isExternalStorageAvailableAndWriteable() ? (Environment.getExternalStorageDirectory() + File.separator + "TML") : (context.getFilesDir() + File.separator + "TML"));
         if (!file.exists()) {
-            TmlAndroid.getLogger().error("FileUtils", "Creating base directory - " + file.mkdir());
+            Tml.getLogger().error("FileUtils", "Creating base directory - " + file.mkdir());
         }
         return file;
     }

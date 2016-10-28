@@ -1,7 +1,6 @@
 package com.translationexchange.android;
 
 import com.translationexchange.core.Source;
-import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 
@@ -40,7 +39,7 @@ public class TmlSource extends Source {
                 options = new HashMap<String, Object>();
             if (!options.containsKey("dry") || !Boolean.valueOf((String) options.get("dry"))) {
                 options.put("cache_key", getCacheKey());
-                updateTranslationKeys(getApplication().getHttpClient().getJSONMap("sources/" + this.generateMD5Key() + "/translations", Utils.buildMap("app_id", getApplication().getKey(), "all", "true", "locale", getLocale()), options));
+                updateTranslationKeys(getApplication().getHttpClient().getJSONMap("sources/" + this.generateMD5Key() + "/translations", Utils.map("app_id", getApplication().getKey(), "all", "true", "locale", getLocale()), options));
             }
             setLoaded(true);
         } catch (Exception ex) {
@@ -56,7 +55,7 @@ public class TmlSource extends Source {
      */
     public void loadLocal(String cacheVersion) {
         try {
-            updateTranslationKeys(getApplication().getHttpClient().getJSONMap(Utils.buildMap("cache_key", getCacheKey(), CacheVersion.VERSION_KEY, cacheVersion)));
+            updateTranslationKeys(getApplication().getHttpClient().getJSONMap(Utils.map("cache_key", getCacheKey(), CacheVersion.VERSION_KEY, cacheVersion)));
             setLoaded(true);
         } catch (Exception ex) {
             setLoaded(false);

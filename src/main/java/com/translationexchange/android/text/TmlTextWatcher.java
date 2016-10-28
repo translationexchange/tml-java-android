@@ -5,7 +5,7 @@ import android.text.Spannable;
 import android.text.TextWatcher;
 import android.widget.TextView;
 
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.android.logger.Logger;
 
 import java.lang.ref.WeakReference;
@@ -36,7 +36,7 @@ class TmlTextWatcher implements TextWatcher {
                 logger.debug("onTextChanged set new", s.toString());
                 if (!(s instanceof Spannable)) {
                     view.removeTextChangedListener(this);
-                    view.setText(TmlAndroid.translate(s.toString()));
+                    view.setText(Tml.tr(s.toString()));
                     view.addTextChangedListener(this);
                 }
             }

@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.translationexchange.core.Session;
-import com.translationexchange.core.Tml;
 import com.translationexchange.core.TranslationKey;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
@@ -21,7 +20,7 @@ import java.util.Observer;
 
 public class TmlSession extends Session {
 
-    private AndroidApplication application;
+    private TmlApplication application;
     private ArrayList<Observer> observers = new ArrayList<>();
 
     /**
@@ -37,10 +36,10 @@ public class TmlSession extends Session {
     public void init(Map<String, Object> options, Map<String, Object> applicationParams) {
         try {
             boolean sync = options.containsKey("sync") && (Boolean) options.get("sync");
-            setApplication(new AndroidApplication(options));
+            setApplication(new TmlApplication(options));
             getApplication().setSession(this);
             if (sync) {
-                getApplication().load(Utils.buildMap());
+                getApplication().load(Utils.map());
                 if (getApplication().isLoaded()) {
                     setCurrentLocale(getApplication().getFirstAcceptedLocale((String) options.get("locale")));
                 }
@@ -66,11 +65,11 @@ public class TmlSession extends Session {
     }
 
     @Override
-    public AndroidApplication getApplication() {
+    public TmlApplication getApplication() {
         return application;
     }
 
-    public void setApplication(AndroidApplication application) {
+    public void setApplication(TmlApplication application) {
         this.application = application;
     }
 
@@ -84,7 +83,7 @@ public class TmlSession extends Session {
         getApplication().resetTranslations();
         getApplication().loadTranslationsLocal(language, (String) options.get(CacheVersion.VERSION_KEY));
 
-        TmlAndroid.initSource("index", language.getLocale(), options);
+        Tml.initSource("index", language.getLocale(), options);
 
         setChanged();
         notifyObservers(language);
@@ -105,7 +104,7 @@ public class TmlSession extends Session {
         getApplication().resetTranslations();
         getApplication().loadTranslations(language);
 
-        TmlAndroid.initSource("index", language.getLocale());
+        Tml.initSource("index", language.getLocale());
 
         setChanged();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -119,7 +118,7 @@ public class TmlSession extends Session {
     }
 
     /**
-     * <p>translate.</p>
+     * <p>tr.</p>
      *
      * @param label       a {@link java.lang.String} object.
      * @param description a {@link java.lang.String} object.

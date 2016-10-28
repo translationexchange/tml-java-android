@@ -5,7 +5,7 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.core.Utils;
 
 import java.util.GregorianCalendar;
@@ -58,7 +58,7 @@ public class Auth {
     }
 
     public static Auth getAuth() {
-        String auth = (String) TmlAndroid.getCache().fetch("auth", Utils.buildMap());
+        String auth = (String) Tml.getCache().fetch("auth", Utils.map());
         if (auth != null) {
             byte[] dataDecoded = Base64.decode(auth, Base64.DEFAULT);
             String s = new String(dataDecoded);
@@ -80,8 +80,8 @@ public class Auth {
             auth.createdAt = GregorianCalendar.getInstance().getTimeInMillis();
             message = gson.toJson(auth);
             byte[] bytes = Base64.encode(message.getBytes(), Base64.DEFAULT);
-            TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
-            TmlAndroid.setAuth(auth);
+            Tml.getCache().store("auth", new String(bytes), Utils.map());
+            Tml.setAuth(auth);
             return true;
         }
         return false;
@@ -91,7 +91,7 @@ public class Auth {
         Gson gson = new Gson();
         String auth = gson.toJson(this);
         byte[] bytes = Base64.encode(auth.getBytes(), Base64.DEFAULT);
-        TmlAndroid.getCache().store("auth", new String(bytes), Utils.buildMap());
+        Tml.getCache().store("auth", new String(bytes), Utils.map());
     }
 
     @Override

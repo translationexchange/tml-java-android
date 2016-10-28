@@ -17,4 +17,10 @@
         <item name="android:textSize">20sp</item>
         <item name="android:clickable">false</item>
     </style>
+
+    <style name="App.Dialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">96%</item>
+        <item name="android:windowMinWidthMinor">96%</item>
+    </style>
+
 </resources>

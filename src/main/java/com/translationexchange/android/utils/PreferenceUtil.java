@@ -2,6 +2,7 @@ package com.translationexchange.android.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.translationexchange.android.service.TmlService;
 
@@ -29,7 +30,7 @@ public class PreferenceUtil {
 
     public static Locale getCurrentLocation(Context context) {
         String temp = getUserPreference(context, CURRENT_LOCATION, String.class);
-        if (temp.isEmpty()) {
+        if (TextUtils.isEmpty(temp)) {
             return Locale.getDefault();
         } else {
             String[] strings = temp.split(",");

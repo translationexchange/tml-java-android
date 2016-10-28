@@ -36,7 +36,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.translationexchange.android.R;
-import com.translationexchange.android.TmlAndroid;
+import com.translationexchange.android.Tml;
 import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.model.Auth;
 
@@ -62,13 +62,13 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
     @TmlAnnotation
     @Override
     public void initUi() {
-        btnChangeLanguage.setText(TmlAndroid.translate("Change language"));
+        btnChangeLanguage.setText(Tml.tr("Change language"));
         if (isAuthValid) {
-            btnAuth.setText(TmlAndroid.translate("Sign Out"));
+            btnAuth.setText(Tml.tr("Sign Out"));
             userName.setVisibility(View.VISIBLE);
             userName.setText(auth.getTranslator().getDisplayName());
         } else {
-            btnAuth.setText(TmlAndroid.translate("Sign In"));
+            btnAuth.setText(Tml.tr("Sign In"));
             userName.setVisibility(View.GONE);
         }
         updateInlineMode();
@@ -77,16 +77,16 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        auth = TmlAndroid.getAuth();
+        auth = Tml.getAuth();
         isAuthValid = auth != null && !auth.isExpired();
         initUi();
     }
 
     private void updateInlineMode() {
         if (isAuthValid && auth.isInlineMode()) {
-            btnTranslation.setText(TmlAndroid.translate("Deactivate Translation"));
+            btnTranslation.setText(Tml.tr("Deactivate Translation"));
         } else {
-            btnTranslation.setText(TmlAndroid.translate("Activate Translation"));
+            btnTranslation.setText(Tml.tr("Activate Translation"));
         }
     }
 
@@ -98,13 +98,13 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
                 auth.toggleInlineMode();
                 auth.save();
                 updateInlineMode();
-                TmlAndroid.reInit(getApplicationContext());
+                Tml.reInit(getApplicationContext());
             }
         } else if (id == btnChangeLanguage.getId()) {
             LanguageSelectorActivity.open(this);
         } else if (id == btnAuth.getId()) {
             if (isAuthValid) {
-                TmlAndroid.setAuth(null);
+                Tml.setAuth(null);
                 AuthorizationActivity.logout(this);
             } else {
                 AuthorizationActivity.auth(this);

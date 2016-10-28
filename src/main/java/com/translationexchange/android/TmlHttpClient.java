@@ -8,7 +8,6 @@ import com.squareup.okhttp.Response;
 import com.translationexchange.android.activities.AuthorizationActivity;
 import com.translationexchange.core.Application;
 import com.translationexchange.core.HttpClient;
-import com.translationexchange.core.Tml;
 import com.translationexchange.core.Utils;
 import com.translationexchange.core.cache.CacheVersion;
 
@@ -23,13 +22,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by ababenko on 9/8/16.
  */
-public class AndroidHttpClient extends HttpClient {
+public class TmlHttpClient extends HttpClient {
     /**
      * Default constructor
      *
      * @param application a {@link Application} object.
      */
-    public AndroidHttpClient(Application application) {
+    public TmlHttpClient(Application application) {
         super(application);
     }
 
@@ -80,7 +79,7 @@ public class AndroidHttpClient extends HttpClient {
             return response;
         } catch (Exception ex) {
             Tml.getLogger().error("Failed to get from CDN " + cacheKey + " with error: " + ex.getMessage());
-            return cacheKey.equals("version") ? (String) Tml.getCache().fetch(cacheVersion.getVersionKey(), Utils.buildMap("cache_key", CacheVersion.VERSION_KEY)) : null;
+            return cacheKey.equals("version") ? (String) Tml.getCache().fetch(cacheVersion.getVersionKey(), Utils.map("cache_key", CacheVersion.VERSION_KEY)) : null;
         }
     }
 
@@ -104,13 +103,13 @@ public class AndroidHttpClient extends HttpClient {
         CacheVersion cacheVersion = Tml.getCache().verifyCacheVersion(getApplication());
 
         // load version from server
-        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode()) {
+        if (Tml.getAuth() != null && Tml.getAuth().isInlineMode()) {
             cacheVersion.setVersion("live");
             cacheVersion.markAsUpdated();
         } else {
             if (cacheVersion.isExpired()) {
                 Tml.getLogger().debug("load version from the server...");
-                cacheVersion.updateFromCDN(getFromCDN("version", Utils.buildMap("uncompressed", true)));
+                cacheVersion.updateFromCDN(getFromCDN("version", Utils.map("uncompressed", true)));
             }
         }
 
@@ -125,7 +124,7 @@ public class AndroidHttpClient extends HttpClient {
             return processJSONResponse(responseText, options);
 
         // if no data in the local cache
-        if (TmlAndroid.getAuth() != null && TmlAndroid.getAuth().isInlineMode()) {
+        if (Tml.getAuth() != null && Tml.getAuth().isInlineMode()) {
             responseText = get(path, params, options);
         } else {
             responseText = getFromCDN(cacheKey, options);
@@ -136,8 +135,8 @@ public class AndroidHttpClient extends HttpClient {
 
         result = processJSONResponse(responseText, options);
 
-        if (result != null && result.get("status") != null && result.get("status").toString().equals("403") && TmlAndroid.getAuth() != null) {
-            TmlAndroid.setAuth(null);
+        if (result != null && result.get("status") != null && result.get("status").toString().equals("403") && Tml.getAuth() != null) {
+            Tml.setAuth(null);
             AuthorizationActivity.auth();
             throw new Exception("Access token not provided");
         }
@@ -159,7 +158,7 @@ public class AndroidHttpClient extends HttpClient {
         if (getAccessToken() == null) {
             throw new IOException("Unauthorized");
         }
-        URL url = Utils.buildURL(getApplication().getHost(), API_PATH + path, Utils.buildMap("access_token", getAccessToken()));
+        URL url = Utils.buildURL(getApplication().getHost(), API_PATH + path, Utils.map("access_token", getAccessToken()));
 
         Tml.getLogger().debug("HTTP Post: " + url.toString());
         Tml.getLogger().debug("HTTP Params: " + params.toString());
@@ -183,8 +182,8 @@ public class AndroidHttpClient extends HttpClient {
 
         Response response = getOkHttpClient().newCall(request).execute();
         if (!response.isSuccessful()) {
-            if (TmlAndroid.getAuth() != null && (response.code() == 401 || response.code() == 403)) {
-                TmlAndroid.setAuth(null);
+            if (Tml.getAuth() != null && (response.code() == 401 || response.code() == 403)) {
+                Tml.setAuth(null);
                 AuthorizationActivity.auth();
             }
             throw new IOException("Unexpected code " + response);
