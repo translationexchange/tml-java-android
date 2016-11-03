@@ -1,5 +1,6 @@
 package com.translationexchange.android.adapters;
 
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.translationexchange.android.R;
+import com.translationexchange.android.Tml;
 import com.translationexchange.core.languages.Language;
 
 import java.util.List;
@@ -83,6 +85,14 @@ public class LanguageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     ((ImageView) view).setImageBitmap(null);
                 }
             });
+
+            if (Tml.getSession() != null) {
+                if (Tml.getSession().getCurrentLanguage().getLocale().equals(language.getLocale())) {
+                    textView.setTypeface(Typeface.DEFAULT_BOLD);
+                } else {
+                    textView.setTypeface(Typeface.DEFAULT);
+                }
+            }
         }
 
         @Override
