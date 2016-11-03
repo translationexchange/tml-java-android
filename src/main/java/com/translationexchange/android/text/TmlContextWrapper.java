@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 public class TmlContextWrapper extends ContextWrapper {
 
     private LayoutInflater mInflater;
+    private TmlResources tmlResources;
 
     public static ContextWrapper wrap(Context base) {
         return new TmlContextWrapper(base);
@@ -14,6 +15,7 @@ public class TmlContextWrapper extends ContextWrapper {
 
     TmlContextWrapper(Context base) {
         super(base);
+//        tmlResources = new TmlResources(super.getResources());
     }
 
     @Override
@@ -26,4 +28,9 @@ public class TmlContextWrapper extends ContextWrapper {
         }
         return super.getSystemService(name);
     }
+
+//    @Override
+//    public Resources getResources() {
+//        return tmlResources;
+//    }
 }

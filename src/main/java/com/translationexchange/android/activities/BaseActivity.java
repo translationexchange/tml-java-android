@@ -17,8 +17,10 @@ import com.translationexchange.android.text.TmlContextWrapper;
 public class BaseActivity extends AppCompatActivity {
 
     @TmlAnnotation
-    public void initUi(){
-    };
+    public void initUi() {
+    }
+
+    ;
 
     public void enableBackButton(boolean isHomeButtonEnabled) {
         ActionBar actionBar = getSupportActionBar();
@@ -41,7 +43,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
-    public void attachBaseContext(Context newBase) {
-        super.attachBaseContext(TmlContextWrapper.wrap(newBase));
+    public void attachBaseContext(Context base) {
+        super.attachBaseContext(TmlContextWrapper.wrap(base));
     }
 }
