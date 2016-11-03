@@ -35,11 +35,16 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -75,6 +80,7 @@ public class Tml extends com.translationexchange.core.Tml {
     private static Application.ActivityLifecycleCallbacks activityLifecycleCallbacks;
     private static Auth auth;
     private static TmlSession session = null;
+    private static Resources resources;
 
     /**
      * <p>Initializes the SDK</p>
@@ -152,6 +158,35 @@ public class Tml extends com.translationexchange.core.Tml {
         TmlService.startSync(context);
     }
 
+    private static void initRes(Context context) {
+//        if (resources != null && getAndroidApplication() != null) {
+//            Locale locale = null;
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                locale = resources.getConfiguration().getLocales().get(0);
+//            } else {
+//                locale = resources.getConfiguration().locale;
+//            }
+//            if (!locale.getCountry().equals(getAndroidApplication().getDefaultLocale())) {
+//                resources = null;
+//            }
+//        }
+        if (resources == null) {
+            Configuration conf = context.getResources().getConfiguration();
+            Locale locale = new Locale("en");
+            if (getAndroidApplication() != null) {
+                locale = new Locale(getAndroidApplication().getDefaultLocale());
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                LocaleList localeList = new LocaleList(locale);
+                conf.setLocales(localeList);
+            } else {
+                conf.locale = locale;
+            }
+            DisplayMetrics metrics = new DisplayMetrics();
+            resources = new Resources(context.getAssets(), metrics, conf);
+        }
+    }
+
     private static void startRecognizeTouch(Context context) {
         if (activityLifecycleCallbacks == null) {
             ((Application) context.getApplicationContext()).registerActivityLifecycleCallbacks(activityLifecycleCallbacks = new Application.ActivityLifecycleCallbacks() {
@@ -217,11 +252,33 @@ public class Tml extends com.translationexchange.core.Tml {
         return tr(label, "");
     }
 
+    public static String tr(Context context, int stringResId) {
+        initRes(context);
+        return tr(resources.getString(stringResId));
+    }
+
+    public static String tr(Context context, int stringResId, Object... formatArgs) {
+        initRes(context);
+        return tr(resources.getString(stringResId, formatArgs));
+    }
+
     public static void tr(View textLabel, String label) {
         if (textLabel instanceof TextView) {
             textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
             ((TextView) textLabel).setText(tr(label));
         }
+    }
+
+    public static void tr(View textLabel, int stringResId) {
+        initRes(textLabel.getContext());
+        String label = resources.getString(stringResId);
+        tr(textLabel, label);
+    }
+
+    public static void tr(View textLabel, int stringResId, Object... formatArgs) {
+        initRes(textLabel.getContext());
+        String label = resources.getString(stringResId, formatArgs);
+        tr(textLabel, label);
     }
 
     /**
