@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Observer;
-import java.util.concurrent.TimeUnit;
 
 public class Tml extends com.translationexchange.core.Tml {
 
@@ -81,6 +80,7 @@ public class Tml extends com.translationexchange.core.Tml {
     private static Auth auth;
     private static TmlSession session = null;
     private static Resources resources;
+    private static Thread submitMissingTranslationKeys;
 
     /**
      * <p>Initializes the SDK</p>
@@ -111,21 +111,34 @@ public class Tml extends com.translationexchange.core.Tml {
                 }
             }
 
-            TmlService.startSync(context);
-            startScheduledTasks();
+            if (!getConfig().isUseLocalBundle()) {
+                TmlService.startSync(context);
+                startScheduledTasks();
+            }
         }
     }
 
     public static void startScheduledTasks() {
-        if (applicationScheduleHandler != null)
+        if (submitMissingTranslationKeys != null)
             return;
 
-        applicationScheduleHandler = scheduler.scheduleAtFixedRate(new Runnable() {
+        submitMissingTranslationKeys = new Thread(new Runnable() {
+            @Override
             public void run() {
-                getLogger().debug("Running scheduled tasks...");
-                getSession().getApplication().submitMissingTranslationKeys();
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                while (getSession().getApplication().isMissingTranslationKeysExists()) {
+                    if (getSession() != null) {
+                        getLogger().debug("Send missing translation keys tasks...");
+                        getSession().getApplication().submitMissingTranslationKeys();
+                    }
+                }
+                submitMissingTranslationKeys = null;
             }
-        }, 10, 5, TimeUnit.SECONDS);
+        });
+        submitMissingTranslationKeys.start();
     }
 
     private static void initConfig(Context context) {

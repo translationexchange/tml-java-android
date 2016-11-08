@@ -9,6 +9,7 @@ import com.translationexchange.core.cache.CacheVersion;
 import com.translationexchange.core.languages.Language;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,15 +60,18 @@ public class TmlApplication extends Application {
         return httpClient;
     }
 
+    public boolean isMissingTranslationKeysExists() {
+        boolean isEmpty = getMissingTranslationKeysBySources().isEmpty();
+        Tml.getLogger().debug("TmlApplication", "MissingTranslationKeys " + (isEmpty ? "is empty" : "not empty"));
+        Tml.getLogger().debug("Auth", "Auth " + (Tml.getAuth() == null ? "is null" : ("not null and Inline Mode " + Tml.getAuth().isInlineMode())));
+        return !isEmpty && Tml.getAuth() != null;
+//        return !isEmpty && Tml.getAuth() != null && Tml.getAuth().isInlineMode();
+    }
+
     /**
      * Submits missing translations keys to the server
      */
     public synchronized void submitMissingTranslationKeys() {
-        if (getMissingTranslationKeysBySources().size() == 0 || Tml.getAuth() == null || !Tml.getAuth().isInlineMode())
-            return;
-//        if (!isKeyRegistrationEnabled() || getMissingTranslationKeysBySources().size() == 0)
-//            return;
-
         Tml.getLogger().debug("Submitting missing translation keys...");
 
         List<Map<String, Object>> params = new ArrayList<Map<String, Object>>();
@@ -92,10 +96,27 @@ public class TmlApplication extends Application {
 
             params.add(Utils.map("source", source, "keys", keys));
         }
-
         registerKeys(Utils.map("source_keys", Utils.buildJSON(params), "app_id", getKey()));
-
         this.missingTranslationKeysBySources.clear();
+    }
+
+    /**
+     * <p>registerMissingTranslationKey.</p>
+     *
+     * @param translationKey a {@link com.translationexchange.core.TranslationKey} object.
+     * @param sourceKey      a {@link java.lang.String} object.
+     */
+    public synchronized void registerMissingTranslationKey(TranslationKey translationKey, String sourceKey) {
+        Map<String, TranslationKey> translationKeys = getMissingTranslationKeysBySources().get(sourceKey);
+        if (translationKeys == null) {
+            translationKeys = new HashMap<String, TranslationKey>();
+            getMissingTranslationKeysBySources().put(sourceKey, translationKeys);
+        }
+
+        if (translationKeys.get(translationKey.getKey()) == null) {
+            translationKeys.put(translationKey.getKey(), translationKey);
+            Tml.startScheduledTasks();
+        }
     }
 
     public void loadLocal(String cacheVersion) {

@@ -44,8 +44,6 @@ class TmlTextFactory {
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
 
-            Tml.getLogger().debug("TextView", view.getClass().getName());
-
             // Check xml attrs, style attrs and text appearance for font path
             String text = resolveFontPath(context, attrs);
             if (TextUtils.isEmpty(text)) {
@@ -57,14 +55,13 @@ class TmlTextFactory {
             }
 
             if (!TextUtils.isEmpty(text)) {
-                logger.debug("TextView init", text);
+                logger.debug("TextView", "Initial text is \n\"" + text + "\"");
 
                 Object o = textView.getTag(R.id.tml_key_hash_id);
                 if (o == null) {
                     textView.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(text));
+                    textView.setText(Tml.tr(text));
                 }
-
-                textView.setText(Tml.tr(text));
             }
 
             textView.addTextChangedListener(new TmlTextWatcher(textView, logger));
