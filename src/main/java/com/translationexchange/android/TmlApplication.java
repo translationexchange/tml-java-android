@@ -64,8 +64,7 @@ public class TmlApplication extends Application {
         boolean isEmpty = getMissingTranslationKeysBySources().isEmpty();
         Tml.getLogger().debug("TmlApplication", "MissingTranslationKeys " + (isEmpty ? "is empty" : "not empty"));
         Tml.getLogger().debug("Auth", "Auth " + (Tml.getAuth() == null ? "is null" : ("not null and Inline Mode " + Tml.getAuth().isInlineMode())));
-        return !isEmpty && Tml.getAuth() != null;
-//        return !isEmpty && Tml.getAuth() != null && Tml.getAuth().isInlineMode();
+        return !isEmpty && Tml.getAuth() != null && Tml.getAuth().isInlineMode();
     }
 
     /**
