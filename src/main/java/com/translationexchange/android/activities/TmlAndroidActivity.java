@@ -37,10 +37,12 @@ import android.widget.TextView;
 
 import com.translationexchange.android.R;
 import com.translationexchange.android.Tml;
-import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.model.Auth;
 
-public class TmlAndroidActivity extends BaseActivity implements View.OnClickListener {
+import java.util.Observable;
+import java.util.Observer;
+
+public class TmlAndroidActivity extends BaseActivity implements View.OnClickListener, Observer {
     private TextView btnTranslation;
     private TextView btnChangeLanguage;
     private TextView btnAuth;
@@ -57,21 +59,13 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
         (btnChangeLanguage = (TextView) findViewById(R.id.btn_change_language)).setOnClickListener(this);
         (btnAuth = (TextView) findViewById(R.id.btn_auth)).setOnClickListener(this);
         userName = (TextView) findViewById(R.id.user_name);
+        Tml.addObserver(this);
     }
 
-    @TmlAnnotation
     @Override
-    public void initUi() {
-        btnChangeLanguage.setText(Tml.tr("Change language"));
-        if (isAuthValid) {
-            btnAuth.setText(Tml.tr("Sign Out"));
-            userName.setVisibility(View.VISIBLE);
-            userName.setText(auth.getTranslator().getDisplayName());
-        } else {
-            btnAuth.setText(Tml.tr("Sign In"));
-            userName.setVisibility(View.GONE);
-        }
-        updateInlineMode();
+    protected void onDestroy() {
+        super.onDestroy();
+        Tml.deleteObserver(this);
     }
 
     @Override
@@ -79,7 +73,7 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
         super.onResume();
         auth = Tml.getAuth();
         isAuthValid = auth != null && !auth.isExpired();
-        initUi();
+        update(null, null);
     }
 
     private void updateInlineMode() {
@@ -111,5 +105,19 @@ public class TmlAndroidActivity extends BaseActivity implements View.OnClickList
             }
 
         }
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        btnChangeLanguage.setText(Tml.tr("Change language"));
+        if (isAuthValid) {
+            btnAuth.setText(Tml.tr("Sign Out"));
+            userName.setVisibility(View.VISIBLE);
+            userName.setText(auth.getTranslator().getDisplayName());
+        } else {
+            btnAuth.setText(Tml.tr("Sign In"));
+            userName.setVisibility(View.GONE);
+        }
+        updateInlineMode();
     }
 }

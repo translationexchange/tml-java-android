@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.translationexchange.android.interfaces.TmlAnnotation;
 import com.translationexchange.android.text.TmlContextWrapper;
 
 /**
@@ -15,12 +14,6 @@ import com.translationexchange.android.text.TmlContextWrapper;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
-
-    @TmlAnnotation
-    public void initUi() {
-    }
-
-    ;
 
     public void enableBackButton(boolean isHomeButtonEnabled) {
         ActionBar actionBar = getSupportActionBar();

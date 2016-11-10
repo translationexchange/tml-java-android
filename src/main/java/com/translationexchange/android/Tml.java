@@ -82,8 +82,15 @@ public class Tml extends com.translationexchange.core.Tml {
     private static Resources resources;
     private static Thread submitMissingTranslationKeys;
 
+    public static void init(Context context) {
+        init(context, "");
+    }
+
     /**
      * <p>Initializes the SDK</p>
+     *
+     * @param context    -
+     * @param zipVersion -
      */
     public static void init(Context context, String zipVersion) {
         startRecognizeTouch(context);
@@ -275,20 +282,22 @@ public class Tml extends com.translationexchange.core.Tml {
         return tr(resources.getString(stringResId, formatArgs));
     }
 
-    public static void tr(View textLabel, String label) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(tr(label));
-        }
+    public static <T extends TextView> void tr(T textLabel) {
+        tr(textLabel, textLabel.getText().toString());
     }
 
-    public static void tr(View textLabel, int stringResId) {
+    public static <T extends TextView> void tr(T textLabel, String label) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(tr(label));
+    }
+
+    public static <T extends TextView> void tr(T textLabel, int stringResId) {
         initRes(textLabel.getContext());
         String label = resources.getString(stringResId);
         tr(textLabel, label);
     }
 
-    public static void tr(View textLabel, int stringResId, Object... formatArgs) {
+    public static <T extends TextView> void tr(T textLabel, int stringResId, Object... formatArgs) {
         initRes(textLabel.getContext());
         String label = resources.getString(stringResId, formatArgs);
         tr(textLabel, label);
@@ -305,11 +314,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return tr(label, description, null);
     }
 
-    public static void tr(View textLabel, String label, String description) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
-            ((TextView) textLabel).setText(tr(label, description));
-        }
+    public static <T extends TextView> void tr(T textLabel, String label, String description) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+        textLabel.setText(tr(label, description));
     }
 
     /**
@@ -324,11 +331,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? label : getSession().translate(label, description, tokens, null);
     }
 
-    public static void tr(View textLabel, String label, String description, Map<String, Object> tokens) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
-            ((TextView) textLabel).setText(tr(label, description, tokens));
-        }
+    public static <T extends TextView> void tr(T textLabel, String label, String description, Map<String, Object> tokens) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+        textLabel.setText(tr(label, description, tokens));
     }
 
     /**
@@ -342,11 +347,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? label : getSession().translate(label, tokens);
     }
 
-    public static void tr(View textLabel, String label, Map<String, Object> tokens) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(tr(label, tokens));
-        }
+    public static <T extends TextView> void tr(T textLabel, String label, Map<String, Object> tokens) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(tr(label, tokens));
     }
 
     /**
@@ -361,11 +364,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? label : getSession().translate(label, tokens, options);
     }
 
-    public static void tr(View textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(tr(label, tokens, options));
-        }
+    public static <T extends TextView> void tr(T textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(tr(label, tokens, options));
     }
 
     /**
@@ -378,11 +379,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : trs(label, "");
     }
 
-    public static void trs(View textLabel, String label) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(trs(label));
-        }
+    public static <T extends TextView> void trs(T textLabel, String label) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(trs(label));
     }
 
     /**
@@ -396,11 +395,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : trs(label, description, null);
     }
 
-    public static void trs(View textLabel, String label, String description) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
-            ((TextView) textLabel).setText(trs(label, description));
-        }
+    public static <T extends TextView> void trs(T textLabel, String label, String description) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+        textLabel.setText(trs(label, description));
     }
 
     /**
@@ -415,11 +412,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : trs(label, description, tokens, null);
     }
 
-    public static void trs(View textLabel, String label, String description, Map<String, Object> tokens) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
-            ((TextView) textLabel).setText(trs(label, description, tokens));
-        }
+    public static <T extends TextView> void trs(T textLabel, String label, String description, Map<String, Object> tokens) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+        textLabel.setText(trs(label, description, tokens));
     }
 
     /**
@@ -433,11 +428,9 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : trs(label, null, tokens, null);
     }
 
-    public static void trs(View textLabel, String label, Map<String, Object> tokens) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(trs(label, tokens));
-        }
+    public static <T extends TextView> void trs(T textLabel, String label, Map<String, Object> tokens) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(trs(label, tokens));
     }
 
     /**
@@ -452,11 +445,14 @@ public class Tml extends com.translationexchange.core.Tml {
         return getSession() == null ? new SpannableString(label) : trs(label, null, tokens, options);
     }
 
-    public static void trs(View textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
-            ((TextView) textLabel).setText(trs(label, tokens, options));
-        }
+    public static <T extends TextView> void trs(T textLabel, String label, Map<String, Object> tokens, Map<String, Object> options) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label));
+        textLabel.setText(trs(label, tokens, options));
+    }
+
+    public static <T extends TextView> void trs(T textLabel, String label, String description, Map<String, Object> tokens, Map<String, Object> options) {
+        textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
+        ((TextView) textLabel).setText(trs(label, description, tokens, options));
     }
 
     /**
@@ -480,13 +476,6 @@ public class Tml extends com.translationexchange.core.Tml {
             }
         }
 
-    }
-
-    public static void trs(View textLabel, String label, String description, Map<String, Object> tokens, Map<String, Object> options) {
-        if (textLabel instanceof TextView) {
-            textLabel.setTag(R.id.tml_key_hash_id, TranslationKey.generateKey(label, description));
-            ((TextView) textLabel).setText(trs(label, description, tokens, options));
-        }
     }
 
     private static boolean hasZipVersion(String version) {
