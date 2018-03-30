@@ -23,7 +23,7 @@ public class TmlLongClickListener implements View.OnLongClickListener {
                 Auth auth = Tml.getAuth();
                 String keyHash = o.toString();
                 Tml.getLogger().debug("Long_Click", "Key hash - " + keyHash);
-                String url = tools.getMobileTranslationCenterKey().replace("{translation_key}", keyHash).replace("{access_token}", auth.getAccessToken()).replace("{locale}", PreferenceUtil.getCurrentLocation(view.getContext()).getLanguage());
+                String url = tools.getMobileTranslationCenterKey().replace("{translation_key}", keyHash).replace("{access_token}", auth.getAccessToken()).replace("{locale}", PreferenceUtil.getCurrentLocation(view.getContext()).toLanguageTag());
                 MobileTranslationCenterActivity.translate(view.getContext(), url);
                 return true;
             }

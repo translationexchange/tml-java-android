@@ -129,7 +129,7 @@ public class LanguageSelectorActivity extends BaseActivity implements LanguageAd
 
     @Override
     public void onClick(Language language) {
-        PreferenceUtil.setCurrentLocation(getApplicationContext(), new Locale(language.getLocale(), language.getLocale()));
+        PreferenceUtil.setCurrentLocation(getApplicationContext(), Locale.forLanguageTag(language.getLocale()));
         finish();
     }
 }

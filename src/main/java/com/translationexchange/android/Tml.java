@@ -110,8 +110,8 @@ public class Tml extends com.translationexchange.core.Tml {
                 Tml.setSession(new TmlSession(options));
 
                 Locale locale = PreferenceUtil.getCurrentLocation(context);
-                if (Tml.getAndroidApplication().isSupportedLocale(locale.getLanguage())) {
-                    Language language = Tml.getAndroidApplication().getLanguageLocal(locale.getLanguage(), cacheVersion.getVersion());
+                if (Tml.getAndroidApplication().isSupportedLocale(locale.toLanguageTag())) {
+                    Language language = Tml.getAndroidApplication().getLanguageLocal(locale.toLanguageTag(), cacheVersion.getVersion());
                     if (language != null && language.isLoaded()) {
                         Tml.switchLanguageLocal(language, options);
                     }

@@ -91,8 +91,8 @@ public class TmlService extends IntentService {
             Locale locale = PreferenceUtil.getCurrentLocation(context);
             Tml.getLogger().debug("Locale is: " + locale);
 
-            if (Tml.getAndroidApplication().isLoaded() && Tml.getAndroidApplication().isSupportedLocale(locale.getLanguage())) {
-                Language language = Tml.getAndroidApplication().getLanguage(locale.getLanguage());
+            if (Tml.getAndroidApplication().isLoaded() && Tml.getAndroidApplication().isSupportedLocale(locale.toLanguageTag())) {
+                Language language = Tml.getAndroidApplication().getLanguage(locale.toLanguageTag());
                 if (language != null && language.isLoaded()) {
                     Tml.switchLanguage(language);
                 }
